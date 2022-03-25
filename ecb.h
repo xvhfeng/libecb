@@ -410,6 +410,10 @@ typedef int ecb_bool;
   #define ecb_deprecated_message(msg) ecb_deprecated
 #endif
 
+/**
+ * 声明为非内联函数
+ *
+ */
 #if _MSC_VER >= 1400
   #define ecb_noinline __declspec (noinline)
 #else
@@ -420,6 +424,11 @@ typedef int ecb_bool;
 #define ecb_const      ecb_attribute ((__const__))
 #define ecb_pure       ecb_attribute ((__pure__))
 
+
+/**
+ * 这个属性告诉编译器函数不会返回，这可以用来抑制关于未达到代码路径的错误。
+ * C库函数abort（）和exit（）都使用此属性声明：
+ */
 #if ECB_C11 || __IBMC_NORETURN
   /* http://www-01.ibm.com/support/knowledgecenter/SSGH3R_13.1.0/com.ibm.xlcpp131.aix.doc/language_ref/noreturn.html */
   #define ecb_noreturn   _Noreturn
