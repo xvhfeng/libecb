@@ -1463,5 +1463,7 @@ ecb_i2a_i64 (char *ptr, int64_t v)
 
 #endif
 
+#include "ecb_internal.h"
+
 #endif
 
