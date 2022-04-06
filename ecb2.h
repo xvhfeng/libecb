@@ -111,10 +111,11 @@ typedef char *gptr;
 #define nil NULL
 #endif
 
-#define ECB2_LOC __FILE__ ":" ECB_STRINGIFY(__LINE__)
+#define ECB2_STRLOC __FILE__ ":" ECB_STRINGIFY(__LINE__)
 
-#define ecb2_retry_when_error(e) (EAGAIN == (e) || EWOULDBLOCK == (e) || EINTR == (e))
-#define ecb2_close(fd) ecb2_donce(ecb2_if(likely(!ecb2_is0(fd)),{close(fd);fd = 0;}));
+#define ecb2_retry_when_err(e) (EAGAIN == (e) || EWOULDBLOCK == (e) || EINTR == (e))
+#define ecb2_retry_if_err(e,expr) if(ecb2_retry_when_err(e)) { expr; continue;}
+#define ecb2_close(fd) ecb2_dorang(ecb2_if(likely(!ecb2_is0(fd)),{close(fd);fd = 0;}));
 
 /* *
  * placeholder for argument or expr
@@ -189,7 +190,7 @@ typedef char *gptr;
 #define ecb2_if_exprgoto(cond, lbl) ecb2_if(cond, { expr; goto lbl; })
 #define ecb2_if_set(cond, name, rval)  ecb2_if(cond, name = rval)
 #define ecb2_iif_set(cond, name, tval, fval) ((name) = (cond) ? (tval) : (fval))
-#define ecb2_donce(expr) do { expr;} while(0)
+#define ecb2_dowhile0(expr) do { expr;} while(0)
 
 /*
  * lambda for c
