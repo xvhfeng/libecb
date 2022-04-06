@@ -237,18 +237,16 @@ typedef union  { i64 ival; f64 fval; } ecb2_dcl;
 #define ecb2_dtol(valf) ({ ecb2_dcl fi = {.fval = (valf)}; fi.ival; })
 #define ecb2_ltod(vali) ({ ecb2_dcl fi = {.ival = (vali)}; fi.fval; })
 
-#define barrier() __asm__ __volatile__("":::"memory")
-#define barrier_data(ptr) __asm__ __volatile__(""::"r"(ptr):"memory")
+#define ecb2_mbr() __asm__ __volatile__("":::"memory")
+#define ecb2_mbrp(ptr) __asm__ __volatile__(""::"r"(ptr):"memory")
 
 /**
  * read memory once
  * then keep load from memory not cache
  */
-    static __inline void
-ecb2_mread(const volatile void *p,
+static __inline void ecb2_mread(const volatile void *p,
         void *res,
-        int size)
-{ /*{{{*/
+        int size) { /*{{{*/
     switch (size)
     {
         case 1:
@@ -264,11 +262,11 @@ ecb2_mread(const volatile void *p,
             *(u64 *)res = *(volatile u64 *)p;
             break;
         default:
-            barrier();
+            ecb2_mbr();
             __builtin_memcpy((void *)res,
                     (const void *)p,
                     size);
-            barrier();
+            ecb2_mbr();
     }
 } /*}}}*/
 
@@ -276,11 +274,9 @@ ecb2_mread(const volatile void *p,
  * write memory once
  * then keep write to memory not cache
  */
-    static __inline void
-ecb2_mwrite(volatile void *p,
+static __inline void ecb2_mwrite(volatile void *p,
         void *res,
-        int size)
-{ /*{{{*/
+        int size) { /*{{{*/
     switch (size)
     {
         case 1:
@@ -296,11 +292,11 @@ ecb2_mwrite(volatile void *p,
             *(volatile u64 *)p = *(u64 *)res;
             break;
         default:
-            barrier();
+            ecb2_mbr();
             __builtin_memcpy((void *)p,
                     (const void *)res,
                     size);
-            barrier();
+            ecb2_mbr();
     }
 } /*}}}*/
 
