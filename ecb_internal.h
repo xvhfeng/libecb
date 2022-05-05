@@ -237,6 +237,7 @@ typedef union  { i64 ival; f64 fval; } ecb_dcl;
 
 #define ecb_mbr() __asm__ __volatile__("":::"memory")
 #define ecb_mbrp(ptr) __asm__ __volatile__(""::"r"(ptr):"memory")
+#define ecb_readonce(v)  (*(volatile typeof(v) *)&(v))
 
 /**
  * read memory once
