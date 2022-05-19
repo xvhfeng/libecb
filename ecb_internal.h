@@ -186,9 +186,8 @@ typedef char *gptr;
 #define ecb_if_exprbrk(cond) ecb_if(cond, {expr; break;})
 #define ecb_if_exprnext(cond) ecb_if(cond, { expr; continue; })
 #define ecb_if_exprgoto(cond, lbl) ecb_if(cond, { expr; goto lbl; })
-#define ecb_if_set(cond, name, rval)  ecb_if(cond, name = rval)
 #define ecb_iif_set(cond, name, tval, fval) ((name) = (cond) ? (tval) : (fval))
-#define ecb_dowhile0(expr) do { expr;} while(0)
+#define ecb_once(expr) do { expr;} while(0)
 
 /*
  * lambda for c
