@@ -113,7 +113,7 @@ typedef char *gptr;
 
 #define ecb_retry_when_err(e) (EAGAIN == (e) || EWOULDBLOCK == (e) || EINTR == (e))
 #define ecb_retry_if_err(e,expr) if(ecb_retry_when_err(e)) { expr; continue;}
-#define ecb_close(fd) ecb_dorang(ecb_if(likely(!ecb_is0(fd)),{close(fd);fd = 0;}));
+#define ecb_close(fd) ecb_dowhile(ecb_if(likely(!ecb_is0(fd)),{close(fd);fd = 0;}));
 
 /* *
  * placeholder for argument or expr
@@ -171,14 +171,14 @@ typedef char *gptr;
  */
 #define ecb_setnil(p) (p) == nuil
 #define ecb_if(cond, expr)    if (ecb_expect_true(cond)) { expr; }
-#define ecb_iif(cond, texpr, fexpr) \
-    if(ecb_expect_true(cond)) {texpr;}else{fexpr;}
-#define ecb_if_rtn(cond, rtnval)  ecb_if((cond), { return (rtnval); })
-#define ecb_iif_rtn(cond, tval, fval)  ecb_iif((cond), { return tval; }, { return fval; })
-#define ecb_if_exprtn(cond, expr, rtnval)  ecb_if(cond, {expr;return rtnval; })
-#define ecb_iif_exprtn(cond, texpr, tval, fexpr, fval)  ecb_iif(cond, {texpr;return tval; }, {fexpr;return fval; })
-#define ecb_setrtn(rc, err, rtnval)  { rc = err;return rtnval; }
-#define ecb_if_setrtn(cond, rc, err, rtnval) ecb_if(cond, ecb_setrtn(rc, err, rtnval))
+#define ecb_iif(cond, t_expr, f_expr) \
+    if(ecb_expect_true(cond)) {t_expr;}else{f_expr;}
+#define ecb_if_rtn(cond, rc)  ecb_if((cond), { return (rc); })
+#define ecb_iif_rtn(cond, t_rc, f_rc)  ecb_iif((cond), { return t_rc; }, { return f_rc; })
+#define ecb_if_exprtn(cond, expr, rc)  ecb_if(cond, {expr;return rc; })
+#define ecb_iif_exprtn(cond, t_expr, t_rc, f_expr, f_rc)  ecb_iif(cond, {t_expr;return t_rc; }, {f_expr;return f_rc; })
+#define ecb_setrtn(rc, err, rc)  { rc = err;return rc; }
+#define ecb_if_setrtn(cond, rc, err, rc) ecb_if(cond, ecb_setrtn(rc, err, rc))
 #define ecb_if_set(cond, name, val)  ecb_if(cond, { name = (val); })
 #define ecb_if_brk(cond) ecb_if(cond, break)
 #define ecb_if_next(cond) ecb_if(cond, continue)
@@ -186,8 +186,8 @@ typedef char *gptr;
 #define ecb_if_exprbrk(cond) ecb_if(cond, {expr; break;})
 #define ecb_if_exprnext(cond) ecb_if(cond, { expr; continue; })
 #define ecb_if_exprgoto(cond, lbl) ecb_if(cond, { expr; goto lbl; })
-#define ecb_iif_set(cond, name, tval, fval) ((name) = (cond) ? (tval) : (fval))
-#define ecb_once(expr) do { expr;} while(0)
+#define ecb_iif_set(cond, name, t_rc, f_rc) ((name) = (cond) ? (t_rc) : (f_rc))
+#define ecb_dowhile(expr) do { expr;} while(0)
 
 /*
  * lambda for c
@@ -237,88 +237,6 @@ typedef union  { i64 ival; f64 fval; } ecb_dcl;
 #define ecb_mbr() __asm__ __volatile__("":::"memory")
 #define ecb_mbrp(ptr) __asm__ __volatile__(""::"r"(ptr):"memory")
 #define ecb_readonce(v)  (*(volatile typeof(v) *)&(v))
-
-/**
- * read memory once
- * then keep load from memory not cache
- */
-static __inline void ecb_mread(const volatile void *p,
-        void *res,
-        int size) { /*{{{*/
-    switch (size)
-    {
-        case 1:
-            *(u8 *)res = *(volatile u8 *)p;
-            break;
-        case 2:
-            *(u16 *)res = *(volatile u16 *)p;
-            break;
-        case 4:
-            *(u32 *)res = *(volatile u32 *)p;
-            break;
-        case 8:
-            *(u64 *)res = *(volatile u64 *)p;
-            break;
-        default:
-            ecb_mbr();
-            __builtin_memcpy((void *)res,
-                    (const void *)p,
-                    size);
-            ecb_mbr();
-    }
-} /*}}}*/
-
-/**
- * write memory once
- * then keep write to memory not cache
- */
-static __inline void ecb_mwrite(volatile void *p,
-        void *res,
-        int size) { /*{{{*/
-    switch (size)
-    {
-        case 1:
-            *(volatile u8 *)p = *(u8 *)res;
-            break;
-        case 2:
-            *(volatile u16 *)p = *(u16 *)res;
-            break;
-        case 4:
-            *(volatile u32 *)p = *(u32 *)res;
-            break;
-        case 8:
-            *(volatile u64 *)p = *(u64 *)res;
-            break;
-        default:
-            ecb_mbr();
-            __builtin_memcpy((void *)p,
-                    (const void *)res,
-                    size);
-            ecb_mbr();
-    }
-} /*}}}*/
-
-#define ecb_mustread(x)                                \
-    ({                                              \
-     union                                       \
-     {                                           \
-     typeof(x) __val;                        \
-     char __c[1];                            \
-     } __u = {.__c = {0}};                       \
-     ecb_mread(&(x), __u.__c, sizeof(x)); \
-     __u.__val;                                  \
-     })
-
-#define ecb_mustwrite(x, val)                           \
-    ({                                               \
-     union                                        \
-     {                                            \
-     typeof(x) __val;                         \
-     char __c[1];                             \
-     } __u = {.__val = (val)};                    \
-     ecb_mwrite(&(x), __u.__c, sizeof(x)); \
-     __u.__val;                                   \
-     })
 
 
 /*
