@@ -31,6 +31,21 @@ typedef uint64_t u64;
 typedef float f32;
 typedef double f64;
 
+#ifndef bool
+typedef enum {
+    false = 0,
+    true = 1
+}bool;
+
+    static char *bool_desc[] = {
+        "false",
+        "true"
+    };
+#endif
+
+
+
+
 /**
  * a pointer address expressed as an unsigned/signed integer
  * then it can convert to pointer
@@ -80,26 +95,26 @@ typedef char *gptr;
 #define ECB_I64MIN (-LLONG_MAX - 1)
 #define ECB_U64MAX (~0ULL)
 
-#define ECB_TBOFGB (1024)
-#define ECB_TBOFMB (1024 * 1024)
-#define ECB_TBOFKB (1024 * 1024 * 1024)
-#define ECB_TBOFB (1024 * 1024 * 1024 * 1024)
-#define ECB_GBOFMB (1024)
-#define ECB_GBOFKB (1024 * 1024)
-#define ECB_GBOFB (1024 * 1024 * 1024)
-#define ECB_MBOFKB (1024)
-#define ECB_MBOFB (1024 * 1024)
-#define ECB_KBOFB (1024)
+#define ECB_TB_OF_GB (1024)
+#define ECB_TB_OF_MB (1024 * 1024)
+#define ECB_TB_OF_KB (1024 * 1024 * 1024)
+#define ECB_TB_OF_B (1024 * 1024 * 1024 * 1024)
+#define ECB_GB_OF_MB (1024)
+#define ECB_GB_OF_KB (1024 * 1024)
+#define ECB_GB_OF_B (1024 * 1024 * 1024)
+#define ECB_MB_OF_KB (1024)
+#define ECB_MB_OF_B (1024 * 1024)
+#define ECB_KB_OF_B (1024)
 
-#define ECB_MINOFSEC (60)
-#define ECB_HOUROFSEC (60 * 60)
-#define ECB_DAYOFSEC (24 * 60 *60)
-#define ECB_HOUROFMIN (60)
-#define ECB_DAYOFMIN (24 * 60)
-#define ECB_HOUROFDAY (24)
-#define ECB_MSTOSEC (1000)
-#define ECB_NSTOSEC ( 1000 * 1000)
-#define ECB_NSTOMS ( 1000)
+#define ECB_MIN_OF_SEC (60)
+#define ECB_HOUR_OF_SEC (60 * 60)
+#define ECB_DAY_OF_SEC (24 * 60 *60)
+#define ECB_HOUR_OF_MIN (60)
+#define ECB_DAY_OF_MIN (24 * 60)
+#define ECB_HOUR_OF_DAY (24)
+#define ECB_MS_TO_SEC (1000)
+#define ECB_NS_TO_SEC ( 1000 * 1000)
+#define ECB_NS_TOuMS ( 1000)
 
 #ifndef null
 #define null NULL
@@ -200,6 +215,8 @@ typedef char *gptr;
 
 #define ecb_mset(ptr, v, len) memset((ptr), (v), (len))
 #define ecb_bzero(ptr, len) ecb_mset((ptr), 0, (len))
+#define ecb_bzero_ex(ptr) ecb_bzero(ptr,sizeof(*(ptr))
+#define ecb_vzero(q) ecb_mset(&(q), 0, sizeof(q))
 
 #ifndef container_of
 #define container_of(ptr, type, member) \
@@ -222,8 +239,8 @@ typedef char *gptr;
  * convert function
  *
  */
-#define ecb_chgto(type, n, v) (type) n = (type)(v)
-#define ecb_chgtoptr(typep, n, v) (type *)n = (type *)(v)
+#define ecb_xchgto(type, n, v) (type) n = (type)(v)
+#define ecb_xchgtoptr(typep, n, v) (type *)n = (type *)(v)
 
 #define ecb_free(ptr) ecb_if(likely(!ecb_isnil(ptr)),{free(prt); ptr = nil;})
 
