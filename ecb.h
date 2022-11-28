@@ -37,7 +37,6 @@
  * provisions above, a recipient may use your version of this file under
  * either the BSD or the GPL.
  */
-
 #ifndef ECB_H
 #define ECB_H
 
@@ -337,7 +336,7 @@ static pthread_mutex_t ecb_mf_lock = PTHREAD_MUTEX_INITIALIZER;
 #elif ECB_GCC_VERSION(2,5)
 #define ecb_inline static __inline__
 #elif ECB_C99
-#define ecb_inline static inline
+#define ecb_inline static inline __attribute__((always_inline))
 #else
 #define ecb_inline static
 #endif

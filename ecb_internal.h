@@ -14,22 +14,55 @@
 #define __compiletime_error(message)
 #endif /* GCC_VERSION >= 40300 */
 
+#ifndef ecb_replaceable
+#define ecb_replaceable __attribute__((weak))
+#endif
+
+#ifndef ecb_repalceby
+#define ecb_repalceby(n) __attribute__((weak, alias(n)));
+#endif
+
+
+
 /**
- * alias for all integer
+ * decl function be called before main-functon run
+ *
+ *100 is min value of constructor or destructor
+ *and it for system
+ **/
+#ifndef ecb_ctor
+#define ecb_ctor(n) __attribute__((constructor(100 + n)))
+#endif
+
+/**
+ * decl function be called after main-functon run
+ *
+ *100 is min value of constructor or destructor
+ *and it for system
+ **/
+#ifndef ecb_dtor
+#define ecb_dtor(n) __attribute__((destructor(100 + n)))
+#endif
+
+#ifndef ecb_packed
+#define ecb_packed __attribute__((__packed__))
+#endif
+
+#define ecb_aligned __attribute__((__aligned__))
+
+/**
+ *
+ * 提醒程序员“此可变参数函数需要一个NULL作为最后一个参数。
+ *
+ */
+#define ecb_endnil ecb_attribute((sentinel))
+
+/**
+ * alias for all type
  *
  * type declaring in ecb.h so it must exist now.
  *
  */
-typedef int8_t i8;
-typedef uint8_t u8;
-typedef int16_t i16;
-typedef uint16_t u16;
-typedef int32_t i32;
-typedef uint32_t u32;
-typedef int64_t i64;
-typedef uint64_t u64;
-typedef float f32;
-typedef double f64;
 
 #ifndef bool
 typedef enum {
@@ -44,6 +77,65 @@ typedef enum {
 #endif
 
 
+#ifndef byte
+typedef signed char byte;
+#endif
+
+#ifndef ubyte
+typedef unsigned char ubyte;
+#endif
+
+#ifndef uchar
+typedef unsigned char uchar;
+#endif
+
+#ifndef string
+typedef char *string;
+#endif
+
+#ifndef wstring
+typedef wchar_t *wstring;
+#endif
+
+#ifndef u64
+typedef u_int64_t u64;
+#endif
+
+#ifndef u32
+typedef u_int32_t u32;
+#endif
+
+#ifndef u16
+typedef u_int16_t u16;
+#endif
+
+#ifndef u8
+typedef u_int8_t u8;
+#endif
+
+#ifndef i64
+typedef int64_t i64;
+#endif
+
+#ifndef i32
+typedef int32_t i32;
+#endif
+
+#ifndef i16
+typedef int16_t i16;
+#endif
+
+#ifndef i8
+typedef int8_t i8;
+#endif
+
+#ifndef f32
+typedef float f32;
+#endif
+
+#ifndef f64
+typedef double f64;
+#endif
 
 
 /**
@@ -51,12 +143,12 @@ typedef enum {
  * then it can convert to pointer
  */
 typedef uintptr_t uptr;
-typedef intptr_t iptr;
+typedef intptr_t intptr;
 
 /**
  * generic object pointer
  */
-typedef char *gptr;
+typedef char *object;
 
 /**
  * declare return-type or define type for macro
@@ -68,22 +160,17 @@ typedef char *gptr;
 #define ecb_decltype(type)
 #endif
 
-/**
- *
- * 提醒程序员“此可变参数函数需要一个NULL作为最后一个参数。
- *
- */
-#define ecb_endnil ecb_attribute((sentinel))
 
+#define field_sizeof(t, f) __decltype(size_t)(sizeof(((t *) 0)->f))
 /**
  * memory aligned by alloc
  */
 #define ECB_ALIGNEDSIZE ECB_PTRSIZE
 
-#define ECB_BitsCntOfByte 8
-#define ECB_BitsCntOfSHORT 16
-#define ECB_BitsCntOfI32 32
-#define ECB_BitsCntOfI64 64
+#define ECB_BITS_PER_BYTE 8
+#define ECB_BITS_PER_SHORT 16
+#define ECB_BITS_PER_I32 32
+#define ECB_BITS_PER_I64 64
 
 #define ECB_U16MAX ((0XFF) & (~0U))
 #define ECB_I16MAX ((0XFF) & (U16_MAX >> 1))
@@ -95,26 +182,26 @@ typedef char *gptr;
 #define ECB_I64MIN (-LLONG_MAX - 1)
 #define ECB_U64MAX (~0ULL)
 
-#define ECB_TB_OF_GB (1024)
-#define ECB_TB_OF_MB (1024 * 1024)
-#define ECB_TB_OF_KB (1024 * 1024 * 1024)
-#define ECB_TB_OF_B (1024 * 1024 * 1024 * 1024)
-#define ECB_GB_OF_MB (1024)
-#define ECB_GB_OF_KB (1024 * 1024)
-#define ECB_GB_OF_B (1024 * 1024 * 1024)
-#define ECB_MB_OF_KB (1024)
-#define ECB_MB_OF_B (1024 * 1024)
-#define ECB_KB_OF_B (1024)
+#define ECB_GB_PER_TB (1024)
+#define ECB_MB_PER_TB (1024 * 1024)
+#define ECB_KB_PER_TB (1024 * 1024 * 1024)
+#define ECB_B_PER_TB (1024 * 1024 * 1024 * 1024)
+#define ECB_MB_PER_GB (1024)
+#define ECB_KB_PER_GB (1024 * 1024)
+#define ECB_B_PER_GB (1024 * 1024 * 1024)
+#define ECB_KB_PER_MB (1024)
+#define ECB_B_PER_MB (1024 * 1024)
+#define ECB_B_PER_KB (1024)
 
-#define ECB_MIN_OF_SEC (60)
-#define ECB_HOUR_OF_SEC (60 * 60)
-#define ECB_DAY_OF_SEC (24 * 60 *60)
-#define ECB_HOUR_OF_MIN (60)
-#define ECB_DAY_OF_MIN (24 * 60)
-#define ECB_HOUR_OF_DAY (24)
-#define ECB_MS_TO_SEC (1000)
-#define ECB_NS_TO_SEC ( 1000 * 1000)
-#define ECB_NS_TOuMS ( 1000)
+#define ECB_SEC_PER_MIN (60)
+#define ECB_SEC_PER_HOUR (60 * 60)
+#define ECB_SEC_PER_DAY (24 * 60 *60)
+#define ECB_MIN_PER_HOUR (60)
+#define ECB_MIN_PER_DAY (24 * 60)
+#define ECB_HOUR_PER_DAY (24)
+#define ECB_MS_PER_SEC (1000)
+#define ECB_NS_PER_SEC ( 1000 * 1000)
+#define ECB_NS_PER_MS ( 1000)
 
 #ifndef null
 #define null NULL
@@ -126,8 +213,8 @@ typedef char *gptr;
 
 #define ECB_STRLOC __FILE__ ":" ECB_STRINGIFY(__LINE__)
 
-#define ecb_retry_when_err(e) (EAGAIN == (e) || EWOULDBLOCK == (e) || EINTR == (e))
-#define ecb_retry_if_err(e,expr) if(ecb_retry_when_err(e)) { expr; continue;}
+#define ecb_is_retry(e) (EAGAIN == (e) || EWOULDBLOCK == (e) || EINTR == (e))
+#define ecb_retry_do(e,expr) if(ecb_is_retry(e)) { expr; continue;}
 #define ecb_close(fd) ecb_dowhile(ecb_if(likely(!ecb_is0(fd)),{close(fd);fd = 0;}));
 
 /* *
@@ -136,8 +223,14 @@ typedef char *gptr;
 #define ecb_anyval
 #define ecb_anyexpr ;
 
+
+#define ECB_OK 0
+#define ECB_NO -1
+
 #define ecb_isnil(n) (NULL == (n))
 #define ecb_is0(n) (0 == (n))
+#define ecb_isok(n) (ECB_OK == (n))
+#define ecb_isno(n) (ECB_NO == (n))
 
 #define ecb_abs(n) ({ __typeof__(n) _n = (n); 0 >= _n ? _n : (0 - _n) })
 #define ecb_min(a, b) ({__typeof__(a) _a = (a); __typeof__(b) _b = (b); _a < _b ? _a : _b; })
@@ -153,7 +246,7 @@ typedef char *gptr;
 #define ecb_padd(p, off) ecb_decltype(gptr)(((gptr)p) + off)
 #define ecb_psub(p, off) ecb_decltype(gptr)(((gptr)p) - off)
 #define ecb_pdiff(lp, rp) ecb_decltype(i32)(((gptr)lp) - ((gptr)rp))
-#define ecb_npdiff(lp, rp) ecb_decltype(u32) ecb_abs(((gptr)lp) - ((gptr)rp))
+#define ecb_pdiff_ex(lp, rp) ecb_decltype(u32) ecb_abs(((gptr)lp) - ((gptr)rp))
 
 /**
  *  aligned by memory
@@ -244,8 +337,16 @@ typedef char *gptr;
 
 #define ecb_free(ptr) ecb_if(likely(!ecb_isnil(ptr)),{free(prt); ptr = nil;})
 
-typedef union  { i32 ival; f32 fval; } ecb_fci;
-typedef union  { i64 ival; f64 fval; } ecb_dcl;
+typedef union  { 
+    i32 ival; 
+    f32 fval; 
+} ecb_fci;
+
+typedef union  { 
+    i64 ival; 
+    f64 fval; 
+} ecb_dcl;
+
 #define ecb_ftoi(valf) ({ ecb_fci fi = {.fval = (valf)}; fi.ival; })
 #define ecb_itof(vali) ({ ecb_fci fi = {.ival = (vali)}; fi.fval; })
 #define ecb_dtol(valf) ({ ecb_dcl fi = {.fval = (valf)}; fi.ival; })
@@ -254,6 +355,54 @@ typedef union  { i64 ival; f64 fval; } ecb_dcl;
 #define ecb_mbr() __asm__ __volatile__("":::"memory")
 #define ecb_mbrp(ptr) __asm__ __volatile__(""::"r"(ptr):"memory")
 #define ecb_readonce(v)  (*(volatile typeof(v) *)&(v))
+
+/**
+ * most functions need return data with result_t
+ * if function need return runcode and runmsg to called function to deal,
+ * you can use this struct for result
+ *
+ * if you in bussines code,maybe you donot need this
+ * but if in lib code,you donot want to log error msg and give this function
+ * to called,but you want to return msg in detail as soon as you possible,
+ * then result_t is you only choose.
+ */
+typedef struct {
+    i32 ok;
+    uptr msg;
+}result_t ecb_aligned;
+
+/**
+ * this mark for result_t's msg
+ * if msg is heap object then need to free it, marked
+ * if msg is const, donot marked
+ */
+#define ECB_RETMSG_MARK 0x01
+#define ecb_retmsg_marking(retptr) ((retptr)->msg) |= ECB_RESULT_MARK
+#define ecb_retmsg_ismarked(retptr) (ECB_RETMSG_MARK & ((retptr)->msg))
+#define ecb_retmsg_get(retptr) ((char *) ((~ECB_RETMSG_MARK) & ((retptr)->msg)))
+#define ecb_retmsg_isnil(retptr) (0 == (retptr)->msg)
+#define ecb_retmsg_free(retptr,free_handler) \
+    ecb_dowhile(ecb_if(!ecb_retmsg_isnil(retptr), \
+                    ecb_if(ecb_retmsg_ismarked(retptr), \
+                        free_handler(ecb_retmsg_get((retptr))))))
+#define ecb_result_init(retptr) \
+    ecb_dowhile({(retptr)->ok = 0;(retptr)->msg = 0;})
+#define ecb_result_set(retptr,_ok,_msg,ismark) \
+    ecb_dowhile({ (retptr)->ok = (_ok); \
+                (retptr)->msg = (uptr) (_msg);\
+                ecb_if((ismark),ecb_retmsg_marking(retptr));\
+                })
+
+
+/**
+ * support to functional progame
+ * but  have idea now
+ *
+ */
+typedef struct {
+    object some;
+    object none;
+}option_t;
 
 
 /*
