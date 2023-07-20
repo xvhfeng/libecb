@@ -343,7 +343,7 @@ declarations must be put before the whole declaration:
 libecb的大部分的附加属性可以用于函数、变量的处理，有时甚至是一些类型的附加属性,像C中的C<const>或C<volatile>。
 它们是使用GCC属性或其他编译器/语言特定特性实现的。属性声明必须放在整个声明之前:
 
-   ecb_const int mysqrt (int a);
+   ECB_CONST int mysqrt (int a);
    ecb_unused int i;
 
 =over
@@ -384,7 +384,7 @@ used.
 
 与C<ecb_deprecated>相同，但如果可能，在使用对象时使用指定的诊断信息，而不是通用的报错消息。
 
-=item ecb_inline
+=item ECB_INLINE
 
 Expands either to (a compiler-specific equivalent of) C<static inline> or
 to just C<static>, if inline isn't supported. It should be used to declare
@@ -396,7 +396,7 @@ functions that should be inlined, for code size or speed reasons.
 Example: inline this function, it surely will reduce codesize.
 示例:内联这个函数，它肯定会减少代码。
 
-   ecb_inline int
+   ECB_INLINE int
    negmul (int a, int b)
    {
      return - (a * b);
@@ -464,7 +464,7 @@ loop, because it knows it doesn't overwrite input values.
        dst [i] = src [i] * factor;
    }
 
-=item ecb_const
+=item ECB_CONST
 
 Declares that the function only depends on the values of its arguments,
 much like a mathematical function. It specifically does not read or write
@@ -502,12 +502,12 @@ PS:
 
 =item ecb_pure
 
-Similar to C<ecb_const>, declares a function that has no side
-effects. Unlike C<ecb_const>, the function is allowed to examine global
+Similar to C<ECB_CONST>, declares a function that has no side
+effects. Unlike C<ECB_CONST>, the function is allowed to examine global
 variables and any other memory areas (such as the ones passed to it via
 pointers).
 
-While these functions cannot be optimised as aggressively as C<ecb_const>
+While these functions cannot be optimised as aggressively as C<ECB_CONST>
 functions, they can still be optimised away in many occasions, and the
 compiler has more freedom in moving calls to them around.
 
@@ -516,10 +516,10 @@ function that calculates the MD5 sum of some input and updates some MD5
 state passed as argument would I<NOT> be pure, however, as it would modify
 some memory area that is not the return value.
 
-类似于C<ecb_const>，声明一个没有副作用的函数。与C<ecb_const>不同，
+类似于C<ECB_CONST>，声明一个没有副作用的函数。与C<ECB_CONST>不同，
 该函数允许检查全局变量和任何其他内存区域(比如通过指针传递给它的内存区域)。
 
-虽然这些函数不能像C<ecb_const>函数那样被更好地优化，但在很多情况下，
+虽然这些函数不能像C<ECB_CONST>函数那样被更好地优化，但在很多情况下，
 它们仍然可以被优化掉，而且编译器可以更自由地将调用转移到它们那里。
 
 这类函数的典型例子是C<strlen>或C<memcmp>。函数计算输入的MD5并且作为参数传递更新MD5的状态,
@@ -635,7 +635,7 @@ random number, and you have a function that maps this to a range from
 
 例如，当您有一个返回16位随机数的C<rndm16>函数，并且您有一个函数将其映射到从0开始到N-1的范围，那么你可以在头文件中使用这个内联函数:
 
-  ecb_inline uint32_t
+  ECB_INLINE uint32_t
   rndm (uint32_t n)
   {
     return (n * (uint32_t)rndm16 ()) >> 16;
@@ -649,7 +649,7 @@ when the passed number is a constant and also a power of two (C<n & (n -
 但是，对于2的幂，您可以使用普通掩码，不过只有在编译时检测到这种情况才可以这样做。
 这是当传递的数字是一个常数，也是2的幂(C<n & (n -1) == 0>)的情况:
 
-  ecb_inline uint32_t
+  ECB_INLINE uint32_t
   rndm (uint32_t n)
   {
     return is_constant (n) && !(n & (n - 1))
@@ -727,7 +727,7 @@ you expect that most checks will turn out to be false:
   ——那么每次添加东西的时候,你必须检查缓冲区溢出,但你认为大多数情况下,预分配的对于空间是够用的:
 
   /* make sure we have "size" extra room in our buffer */
-  ecb_inline void
+  ECB_INLINE void
   reserve (int size)
   {
     if (ecb_expect_false (current + size > end))
@@ -754,7 +754,7 @@ description could be written thus (only C<ecb_assume> was added):
 
 例如，C<ecb_expect_false>描述中的示例保留函数可以这样写(只添加了C<ecb_assume>):
 
-  ecb_inline void
+  ECB_INLINE void
   reserve (int size)
   {
     if (ecb_expect_false (current + size > end))

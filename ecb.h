@@ -160,10 +160,19 @@ typedef  int32_t  intptr_t;
 #define ECB_EXTERN_C_BEG ECB_EXTERN_C {
 #define ECB_EXTERN_C_END }
 #define ECB_EXT_C_BEG ECB_EXTERN_C_BEG
+ // #define ECB_CMODE_START  \#ifdef __cplusplus extern "C" { \#endif
+
+#define C_MODE extern "C" 
+#define C_MODE_START C_MODE {
+#define C_MODE_END }
 #else
 #define ECB_EXTERN_C extern
 #define ECB_EXTERN_C_BEG
 #define ECB_EXTERN_C_END
+
+#define C_MODE
+#define C_MODE_START
+#define C_MODE_END 
 #endif
 
 /*****************************************************************************/
@@ -332,24 +341,24 @@ static pthread_mutex_t ecb_mf_lock = PTHREAD_MUTEX_INITIALIZER;
 /*****************************************************************************/
 
 #if ECB_CPP
-#define ecb_inline static inline
+#define ECB_INLINE static inline
 #elif ECB_GCC_VERSION(2,5)
-#define ecb_inline static __inline__
+#define ECB_INLINE static __inline__
 #elif ECB_C99
-#define ecb_inline static inline __attribute__((always_inline))
+#define ECB_INLINE static inline __attribute__((always_inline))
 #else
-#define ecb_inline static
+#define ECB_INLINE static
 #endif
 
 #if ECB_GCC_VERSION(3,3)
-#define ecb_restrict __restrict__
+#define ECB_RESTRICT __restrict__
 #elif ECB_C99
-#define ecb_restrict restrict
+#define ECB_RESTRICT restrict
 #else
-#define ecb_restrict
+#define ECB_RESTRICT
 #endif
 
-typedef int ecb_bool;
+typedef int ECB_BOOL;
 
 #define ECB_CONCAT_(a, b) a ## b
 #define ECB_CONCAT(a, b) ECB_CONCAT_(a, b)
@@ -357,57 +366,57 @@ typedef int ecb_bool;
 #define ECB_STRINGIFY(a) ECB_STRINGIFY_(a)
 #define ECB_STRINGIFY_EXPR(expr) ((expr), ECB_STRINGIFY_ (expr))
 
-#define ecb_function_ ecb_inline
+#define ECB_FUNCTION_ ECB_INLINE
 
 #if ECB_GCC_VERSION(3,1) || ECB_CLANG_VERSION(2,8)
-#define ecb_attribute(attrlist)        __attribute__ (attrlist)
+#define ECB_ARRT(attrlist)        __attribute__ (attrlist)
 #else
-#define ecb_attribute(attrlist)
+#define ECB_ARRT(attrlist)
 #endif
 
 #if ECB_GCC_VERSION(3,1) || ECB_CLANG_BUILTIN(__builtin_constant_p)
-#define ecb_is_constant(expr)          __builtin_constant_p (expr)
+#define ECB_IS_CONST(expr)          __builtin_constant_p (expr)
 #else
 /* possible C11 impl for integral types
    typedef struct ecb_is_constant_struct ecb_is_constant_struct;
-#define ecb_is_constant(expr)          _Generic ((1 ? (struct ecb_is_constant_struct *)0 : (void *)((expr) - (expr)), ecb_is_constant_struct *: 0, default: 1)) */
+#define ECB_IS_CONST(expr)          _Generic ((1 ? (struct ecb_is_constant_struct *)0 : (void *)((expr) - (expr)), ecb_is_constant_struct *: 0, default: 1)) */
 
-#define ecb_is_constant(expr)          0
+#define ECB_IS_CONST(expr)          0
 #endif
 
 #if ECB_GCC_VERSION(3,1) || ECB_CLANG_BUILTIN(__builtin_expect)
-#define ecb_expect(expr,value)         __builtin_expect ((expr),(value))
+#define ECB_EXPECT(expr,value)         __builtin_expect ((expr),(value))
 #else
-#define ecb_expect(expr,value)         (expr)
+#define ECB_EXPECT(expr,value)         (expr)
 #endif
 
 #if ECB_GCC_VERSION(3,1) || ECB_CLANG_BUILTIN(__builtin_prefetch)
-#define ecb_prefetch(addr,rw,locality) __builtin_prefetch (addr, rw, locality)
+#define ECB_PREFETCH(addr,rw,locality) __builtin_prefetch (addr, rw, locality)
 #else
-#define ecb_prefetch(addr,rw,locality)
+#define ECB_PREFETCH(addr,rw,locality)
 #endif
 
 /* no emulation for ecb_decltype */
 #if ECB_CPP11
 // older implementations might have problems with decltype(x)::type, work around it
 template<class T> struct ecb_decltype_t { typedef T type; };
-#define ecb_decltype(x) ecb_decltype_t<decltype (x)>::type
+#define ECB_DECLTYPE(x) ecb_decltype_t<decltype (x)>::type
 #elif ECB_GCC_VERSION(3,0) || ECB_CLANG_VERSION(2,8)
-#define ecb_decltype(x) __typeof__ (x)
+#define ECB_DECLTYPE(x) __typeof__ (x)
 #endif
 
 #if _MSC_VER >= 1300
-#define ecb_deprecated __declspec (deprecated)
+#define ECB_DEPRECATED __declspec (deprecated)
 #else
-#define ecb_deprecated ecb_attribute ((__deprecated__))
+#define ECB_DEPRECATED ECB_ATTR((__deprecated__))
 #endif
 
 #if _MSC_VER >= 1500
-#define ecb_deprecated_message(msg) __declspec (deprecated (msg))
+#define ECB_DEPRECATED_MESSAGE(msg) __declspec (deprecated (msg))
 #elif ECB_GCC_VERSION(4,5)
-#define ecb_deprecated_message(msg) ecb_attribute ((__deprecated__ (msg))
+#define ECB_DEPRECATED_MESSAGE(msg) ECB_ATTR ((__deprecated__ (msg))
 #else
-#define ecb_deprecated_message(msg) ecb_deprecated
+#define ECB_DEPRECATED_MESSAGE(msg) ECB_DEPRECATED
 #endif
 
         /**
@@ -415,14 +424,14 @@ template<class T> struct ecb_decltype_t { typedef T type; };
          *
          */
 #if _MSC_VER >= 1400
-#define ecb_noinline __declspec (noinline)
+#define ECB_NOINLINE __declspec (noinline)
 #else
-#define ecb_noinline ecb_attribute ((__noinline__))
+#define ECB_NOINLINE ECB_ATTR ((__noinline__))
 #endif
 
-#define ecb_unused     ecb_attribute ((__unused__))
-#define ecb_const      ecb_attribute ((__const__))
-#define ecb_pure       ecb_attribute ((__pure__))
+#define ECB_UNUSED     ECB_ATTR ((__unused__))
+#define ECB_CONST      ECB_ATTR ((__const__))
+#define ECB_PURE       ECB_ATTR ((__pure__))
 
 
         /**
@@ -431,34 +440,34 @@ template<class T> struct ecb_decltype_t { typedef T type; };
          */
 #if ECB_C11 || __IBMC_NORETURN
 /* http://www-01.ibm.com/support/knowledgecenter/SSGH3R_13.1.0/com.ibm.xlcpp131.aix.doc/language_ref/noreturn.html */
-#define ecb_noreturn   _Noreturn
+#define ECB_NORETURN   _Noreturn
 #elif ECB_CPP11
-#define ecb_noreturn   [[noreturn]]
+#define ECB_NORETURN   [[noreturn]]
 #elif _MSC_VER >= 1200
 /* http://msdn.microsoft.com/en-us/library/k6ktzx3s.aspx */
-#define ecb_noreturn   __declspec (noreturn)
+#define ECB_NORETURN   __declspec (noreturn)
 #else
-#define ecb_noreturn   ecb_attribute ((__noreturn__))
+#define ECB_NORETURN   ECB_ATTR((__noreturn__))
 #endif
 
 #if ECB_GCC_VERSION(4,3)
-#define ecb_artificial ecb_attribute ((__artificial__))
-#define ecb_hot        ecb_attribute ((__hot__))
-#define ecb_cold       ecb_attribute ((__cold__))
+#define ECB_ARTIFICIAL ECB_ATTR((__artificial__))
+#define ECB_HOT        ECB_ATTR((__hot__))
+#define ECB_COLD       ECB_ATTR((__cold__))
 #else
-#define ecb_artificial
-#define ecb_hot
-#define ecb_cold
+#define ECB_ARTIFICIAL
+#define ECB_HOT
+#define ECB_COLD
 #endif
 
 /* put around conditional expressions if you are very sure that the  */
 /* expression is mostly true or mostly false. note that these return */
 /* booleans, not the expression.                                     */
-#define ecb_expect_false(expr) ecb_expect (!!(expr), 0)
-#define ecb_expect_true(expr)  ecb_expect (!!(expr), 1)
+#define ECB_EXPECT_FALSE(expr) ECB_EXPECT (!!(expr), 0)
+#define ECB_EXPECT_TRUE(expr)  ECB_EXPECT (!!(expr), 1)
 /* for compatibility to the rest of the world */
-#define ecb_likely(expr)   ecb_expect_true  (expr)
-#define ecb_unlikely(expr) ecb_expect_false (expr)
+#define ECB_LIKELY(expr)   ECB_EXPECT_TRUE  (expr)
+#define ECB_UNLIKELY(expr) ECB_EXPECT_FALSE (expr)
 
 /* count trailing zero bits and count # of one bits */
 #if ECB_GCC_VERSION(3,4) \
@@ -466,16 +475,16 @@ template<class T> struct ecb_decltype_t { typedef T type; };
             && ECB_CLANG_BUILTIN(__builtin_ctz) && ECB_CLANG_BUILTIN(__builtin_ctzll) \
             && ECB_CLANG_BUILTIN(__builtin_popcount))
 /* we assume int == 32 bit, long == 32 or 64 bit and long long == 64 bit */
-#define ecb_ld32(x)      (__builtin_clz      (x) ^ 31)
-#define ecb_ld64(x)      (__builtin_clzll    (x) ^ 63)
-#define ecb_ctz32(x)      __builtin_ctz      (x)
-#define ecb_ctz64(x)      __builtin_ctzll    (x)
-#define ecb_popcount32(x) __builtin_popcount (x)
+#define ECB_LD32(x)      (__builtin_clz      (x) ^ 31)
+#define ECB_LD64(x)      (__builtin_clzll    (x) ^ 63)
+#define ECB_CTZ32(x)      __builtin_ctz      (x)
+#define ECB_CTZ64(x)      __builtin_ctzll    (x)
+#define ECB_POPCOUNT32(x) __builtin_popcount (x)
 /* no popcountll */
 #else
-ecb_function_ ecb_const int ecb_ctz32 (uint32_t x);
-    ecb_function_ ecb_const int
-ecb_ctz32 (uint32_t x)
+ECB_FUNCTION_ ECB_CONST int ECB_CTZ32 (uint32_t x);
+    ECB_FUNCTION_ ECB_CONST int
+ECB_CTZ32 (uint32_t x)
 {
 #if 1400 <= _MSC_VER && (_M_IX86 || _M_X64 || _M_IA64 || _M_ARM)
     unsigned long r;
@@ -486,7 +495,7 @@ ecb_ctz32 (uint32_t x)
 
     x &= ~x + 1; /* this isolates the lowest bit */
 
-#if ECB_branchless_on_i386
+#if ECB_BRANCHLESS_ON_I386
     r += !!(x & 0xaaaaaaaa) << 0;
     r += !!(x & 0xcccccccc) << 1;
     r += !!(x & 0xf0f0f0f0) << 2;
@@ -504,8 +513,8 @@ ecb_ctz32 (uint32_t x)
 #endif
 }
 
-ecb_function_ ecb_const int ecb_ctz64 (uint64_t x);
-    ecb_function_ ecb_const int
+ECB_FUNCTION_ ECB_CONST int ECB_CTZ64 (uint64_t x);
+    ECB_FUNCTION_ ECB_CONST int
 ecb_ctz64 (uint64_t x)
 {
 #if 1400 <= _MSC_VER && (_M_X64 || _M_IA64 || _M_ARM)
@@ -518,9 +527,9 @@ ecb_ctz64 (uint64_t x)
 #endif
 }
 
-ecb_function_ ecb_const int ecb_popcount32 (uint32_t x);
-    ecb_function_ ecb_const int
-ecb_popcount32 (uint32_t x)
+ECB_FUNCTION_ ECB_CONST int ECB_POPCOUNT32 (uint32_t x);
+    ECB_FUNCTION_ ECB_CONST int
+ECB_POPCOUNT32 (uint32_t x)
 {
     x -=  (x >> 1) & 0x55555555;
     x  = ((x >> 2) & 0x33333333) + (x & 0x33333333);
@@ -530,8 +539,8 @@ ecb_popcount32 (uint32_t x)
     return x >> 24;
 }
 
-ecb_function_ ecb_const int ecb_ld32 (uint32_t x);
-ecb_function_ ecb_const int ecb_ld32 (uint32_t x)
+ECB_FUNCTION_ ECB_CONST int ECB_LD32 (uint32_t x);
+ECB_FUNCTION_ ECB_CONST int ECB_LD32 (uint32_t x)
 {
 #if 1400 <= _MSC_VER && (_M_IX86 || _M_X64 || _M_IA64 || _M_ARM)
     unsigned long r;
@@ -550,8 +559,8 @@ ecb_function_ ecb_const int ecb_ld32 (uint32_t x)
 #endif
 }
 
-ecb_function_ ecb_const int ecb_ld64 (uint64_t x);
-ecb_function_ ecb_const int ecb_ld64 (uint64_t x)
+ECB_FUNCTION_ ECB_CONST int ECB_LD64 (uint64_t x);
+ECB_FUNCTION_ ECB_CONST int ECB_LD64 (uint64_t x)
 {
 #if 1400 <= _MSC_VER && (_M_X64 || _M_IA64 || _M_ARM)
     unsigned long r;
@@ -562,25 +571,25 @@ ecb_function_ ecb_const int ecb_ld64 (uint64_t x)
 
     if (x >> 32) { x >>= 32; r += 32; }
 
-    return r + ecb_ld32 (x);
+    return r + ECB_LD32 (x);
 #endif
 }
 #endif
 
-ecb_function_ ecb_const ecb_bool ecb_is_pot32 (uint32_t x);
-ecb_function_ ecb_const ecb_bool ecb_is_pot32 (uint32_t x) { return !(x & (x - 1)); }
-ecb_function_ ecb_const ecb_bool ecb_is_pot64 (uint64_t x);
-ecb_function_ ecb_const ecb_bool ecb_is_pot64 (uint64_t x) { return !(x & (x - 1)); }
+ECB_FUNCTION_ ECB_CONST ecb_bool ECB_IS_POT32 (uint32_t x);
+ECB_FUNCTION_ ECB_CONST ecb_bool ECB_IS_POT32 (uint32_t x) { return !(x & (x - 1)); }
+ECB_FUNCTION_ ECB_CONST ecb_bool ECB_IS_POT64 (uint64_t x);
+ECB_FUNCTION_ ECB_CONST ecb_bool ECB_IS_POT64 (uint64_t x) { return !(x & (x - 1)); }
 
-ecb_function_ ecb_const uint8_t  ecb_bitrev8  (uint8_t  x);
-ecb_function_ ecb_const uint8_t  ecb_bitrev8  (uint8_t  x)
+ECB_FUNCTION_ ECB_CONST uint8_t  ECB_BITREV8  (uint8_t  x);
+ECB_FUNCTION_ ECB_CONST uint8_t  ECB_BITREV8  (uint8_t  x)
 {
     return (  (x * 0x0802U & 0x22110U)
             | (x * 0x8020U & 0x88440U)) * 0x10101U >> 16;
 }
 
-ecb_function_ ecb_const uint16_t ecb_bitrev16 (uint16_t x);
-ecb_function_ ecb_const uint16_t ecb_bitrev16 (uint16_t x)
+ECB_FUNCTION_ ECB_CONST uint16_t ECB_BITREV16 (uint16_t x);
+ECB_FUNCTION_ ECB_CONST uint16_t ECB_BITREV16 (uint16_t x)
 {
     x = ((x >>  1) &     0x5555) | ((x &     0x5555) <<  1);
     x = ((x >>  2) &     0x3333) | ((x &     0x3333) <<  2);
@@ -590,8 +599,8 @@ ecb_function_ ecb_const uint16_t ecb_bitrev16 (uint16_t x)
     return x;
 }
 
-ecb_function_ ecb_const uint32_t ecb_bitrev32 (uint32_t x);
-ecb_function_ ecb_const uint32_t ecb_bitrev32 (uint32_t x)
+ECB_FUNCTION_ ECB_CONST uint32_t ECB_BITREV32 (uint32_t x);
+ECB_FUNCTION_ ECB_CONST uint32_t ECB_BITREV32 (uint32_t x)
 {
     x = ((x >>  1) & 0x55555555) | ((x & 0x55555555) <<  1);
     x = ((x >>  2) & 0x33333333) | ((x & 0x33333333) <<  2);
@@ -604,119 +613,119 @@ ecb_function_ ecb_const uint32_t ecb_bitrev32 (uint32_t x)
 
 /* popcount64 is only available on 64 bit cpus as gcc builtin */
 /* so for this version we are lazy */
-ecb_function_ ecb_const int ecb_popcount64 (uint64_t x);
-    ecb_function_ ecb_const int
-ecb_popcount64 (uint64_t x)
+ECB_FUNCTION_ ECB_CONST int ECB_POPCOUNT64 (uint64_t x);
+    ECB_FUNCTION_ ECB_CONST int
+ECB_POPCOUNT64 (uint64_t x)
 {
-    return ecb_popcount32 (x) + ecb_popcount32 (x >> 32);
+    return ECB_POPCOUNT32 (x) + ECB_POPCOUNT32 (x >> 32);
 }
 
-ecb_inline ecb_const uint8_t  ecb_rotl8  (uint8_t  x, unsigned int count);
-ecb_inline ecb_const uint8_t  ecb_rotr8  (uint8_t  x, unsigned int count);
-ecb_inline ecb_const uint16_t ecb_rotl16 (uint16_t x, unsigned int count);
-ecb_inline ecb_const uint16_t ecb_rotr16 (uint16_t x, unsigned int count);
-ecb_inline ecb_const uint32_t ecb_rotl32 (uint32_t x, unsigned int count);
-ecb_inline ecb_const uint32_t ecb_rotr32 (uint32_t x, unsigned int count);
-ecb_inline ecb_const uint64_t ecb_rotl64 (uint64_t x, unsigned int count);
-ecb_inline ecb_const uint64_t ecb_rotr64 (uint64_t x, unsigned int count);
+ECB_INLINE ECB_CONST uint8_t  ECB_ROTL8  (uint8_t  x, unsigned int count);
+ECB_INLINE ECB_CONST uint8_t  ECB_ROTR8  (uint8_t  x, unsigned int count);
+ECB_INLINE ECB_CONST uint16_t ECB_ROTL16 (uint16_t x, unsigned int count);
+ECB_INLINE ECB_CONST uint16_t ECB_ROTR16 (uint16_t x, unsigned int count);
+ECB_INLINE ECB_CONST uint32_t ECB_ROTL32 (uint32_t x, unsigned int count);
+ECB_INLINE ECB_CONST uint32_t ECB_ROTR32 (uint32_t x, unsigned int count);
+ECB_INLINE ECB_CONST uint64_t ECB_ROTL64 (uint64_t x, unsigned int count);
+ECB_INLINE ECB_CONST uint64_t ECB_ROTR64 (uint64_t x, unsigned int count);
 
-ecb_inline ecb_const uint8_t  ecb_rotl8  (uint8_t  x, unsigned int count) { return (x >> (-count &  7)) | (x << (count &  7)); }
-ecb_inline ecb_const uint8_t  ecb_rotr8  (uint8_t  x, unsigned int count) { return (x << (-count &  7)) | (x >> (count &  7)); }
-ecb_inline ecb_const uint16_t ecb_rotl16 (uint16_t x, unsigned int count) { return (x >> (-count & 15)) | (x << (count & 15)); }
-ecb_inline ecb_const uint16_t ecb_rotr16 (uint16_t x, unsigned int count) { return (x << (-count & 15)) | (x >> (count & 15)); }
-ecb_inline ecb_const uint32_t ecb_rotl32 (uint32_t x, unsigned int count) { return (x >> (-count & 31)) | (x << (count & 31)); }
-ecb_inline ecb_const uint32_t ecb_rotr32 (uint32_t x, unsigned int count) { return (x << (-count & 31)) | (x >> (count & 31)); }
-ecb_inline ecb_const uint64_t ecb_rotl64 (uint64_t x, unsigned int count) { return (x >> (-count & 63)) | (x << (count & 63)); }
-ecb_inline ecb_const uint64_t ecb_rotr64 (uint64_t x, unsigned int count) { return (x << (-count & 63)) | (x >> (count & 63)); }
+ECB_INLINE ECB_CONST uint8_t  ECB_ROTL8  (uint8_t  x, unsigned int count) { return (x >> (-count &  7)) | (x << (count &  7)); }
+ECB_INLINE ECB_CONST uint8_t  ECB_ROTR8  (uint8_t  x, unsigned int count) { return (x << (-count &  7)) | (x >> (count &  7)); }
+ECB_INLINE ECB_CONST uint16_t ECB_ROTL16 (uint16_t x, unsigned int count) { return (x >> (-count & 15)) | (x << (count & 15)); }
+ECB_INLINE ECB_CONST uint16_t ECB_ROTR16 (uint16_t x, unsigned int count) { return (x << (-count & 15)) | (x >> (count & 15)); }
+ECB_INLINE ECB_CONST uint32_t ECB_ROTL32 (uint32_t x, unsigned int count) { return (x >> (-count & 31)) | (x << (count & 31)); }
+ECB_INLINE ECB_CONST uint32_t ECB_ROTR32 (uint32_t x, unsigned int count) { return (x << (-count & 31)) | (x >> (count & 31)); }
+ECB_INLINE ECB_CONST uint64_t ECB_ROTL64 (uint64_t x, unsigned int count) { return (x >> (-count & 63)) | (x << (count & 63)); }
+ECB_INLINE ECB_CONST uint64_t ECB_ROTR64 (uint64_t x, unsigned int count) { return (x << (-count & 63)) | (x >> (count & 63)); }
 
 #if ECB_CPP
 
-inline uint8_t  ecb_ctz (uint8_t  v) { return ecb_ctz32 (v); }
-inline uint16_t ecb_ctz (uint16_t v) { return ecb_ctz32 (v); }
-inline uint32_t ecb_ctz (uint32_t v) { return ecb_ctz32 (v); }
-inline uint64_t ecb_ctz (uint64_t v) { return ecb_ctz64 (v); }
+inline uint8_t  ECB_CTZ (uint8_t  v) { return ECB_CTZ32 (v); }
+inline uint16_t ECB_CTZ (uint16_t v) { return ECB_CTZ32 (v); }
+inline uint32_t ECB_CTZ (uint32_t v) { return ECB_CTZ32 (v); }
+inline uint64_t ECB_CTZ (uint64_t v) { return ECB_CTZ64 (v); }
 
-inline bool ecb_is_pot (uint8_t  v) { return ecb_is_pot32 (v); }
-inline bool ecb_is_pot (uint16_t v) { return ecb_is_pot32 (v); }
-inline bool ecb_is_pot (uint32_t v) { return ecb_is_pot32 (v); }
-inline bool ecb_is_pot (uint64_t v) { return ecb_is_pot64 (v); }
+inline bool ECB_IS_POT (uint8_t  v) { return ECB_IS_POT32 (v); }
+inline bool ECB_IS_POT (uint16_t v) { return ECB_IS_POT32 (v); }
+inline bool ECB_IS_POT (uint32_t v) { return ECB_IS_POT32 (v); }
+inline bool ECB_IS_POT (uint64_t v) { return ECB_IS_POT64 (v); }
 
-inline int ecb_ld (uint8_t  v) { return ecb_ld32 (v); }
-inline int ecb_ld (uint16_t v) { return ecb_ld32 (v); }
-inline int ecb_ld (uint32_t v) { return ecb_ld32 (v); }
-inline int ecb_ld (uint64_t v) { return ecb_ld64 (v); }
+inline int ECB_LD (uint8_t  v) { return ECB_LD32 (v); }
+inline int ECB_LD (uint16_t v) { return ECB_LD32 (v); }
+inline int ECB_LD (uint32_t v) { return ECB_LD32 (v); }
+inline int ECB_LD (uint64_t v) { return ECB_LD64 (v); }
 
-inline int ecb_popcount (uint8_t  v) { return ecb_popcount32 (v); }
-inline int ecb_popcount (uint16_t v) { return ecb_popcount32 (v); }
-inline int ecb_popcount (uint32_t v) { return ecb_popcount32 (v); }
-inline int ecb_popcount (uint64_t v) { return ecb_popcount64 (v); }
+inline int ECB_POPCOUNT (uint8_t  v) { return ECB_POPCOUNT32 (v); }
+inline int ECB_POPCOUNT (uint16_t v) { return ECB_POPCOUNT32 (v); }
+inline int ECB_POPCOUNT (uint32_t v) { return ECB_POPCOUNT32 (v); }
+inline int ECB_POPCOUNT (uint64_t v) { return ECB_POPCOUNT64 (v); }
 
-inline uint8_t  ecb_bitrev (uint8_t  v) { return ecb_bitrev8  (v); }
-inline uint16_t ecb_bitrev (uint16_t v) { return ecb_bitrev16 (v); }
-inline uint32_t ecb_bitrev (uint32_t v) { return ecb_bitrev32 (v); }
+inline uint8_t  ECB_BITREV (uint8_t  v) { return ECB_BITREV8  (v); }
+inline uint16_t ECB_BITREV (uint16_t v) { return ECB_BITREV16 (v); }
+inline uint32_t ECB_BITREV (uint32_t v) { return ECB_BITREV32 (v); }
 
-inline uint8_t  ecb_rotl (uint8_t  v, unsigned int count) { return ecb_rotl8  (v, count); }
-inline uint16_t ecb_rotl (uint16_t v, unsigned int count) { return ecb_rotl16 (v, count); }
-inline uint32_t ecb_rotl (uint32_t v, unsigned int count) { return ecb_rotl32 (v, count); }
-inline uint64_t ecb_rotl (uint64_t v, unsigned int count) { return ecb_rotl64 (v, count); }
+inline uint8_t  ECB_ROTL (uint8_t  v, unsigned int count) { return ECB_ROTL8  (v, count); }
+inline uint16_t ECB_ROTL (uint16_t v, unsigned int count) { return ECB_ROTL16 (v, count); }
+inline uint32_t ECB_ROTL (uint32_t v, unsigned int count) { return ECB_ROTL32 (v, count); }
+inline uint64_t ECB_ROTL (uint64_t v, unsigned int count) { return ECB_ROTL64 (v, count); }
 
-inline uint8_t  ecb_rotr (uint8_t  v, unsigned int count) { return ecb_rotr8  (v, count); }
-inline uint16_t ecb_rotr (uint16_t v, unsigned int count) { return ecb_rotr16 (v, count); }
-inline uint32_t ecb_rotr (uint32_t v, unsigned int count) { return ecb_rotr32 (v, count); }
-inline uint64_t ecb_rotr (uint64_t v, unsigned int count) { return ecb_rotr64 (v, count); }
+inline uint8_t  ECB_ROTR (uint8_t  v, unsigned int count) { return ECB_ROTR8  (v, count); }
+inline uint16_t ECB_ROTR (uint16_t v, unsigned int count) { return ECB_ROTR16 (v, count); }
+inline uint32_t ECB_ROTR (uint32_t v, unsigned int count) { return ECB_ROTR32 (v, count); }
+inline uint64_t ECB_ROTR (uint64_t v, unsigned int count) { return ECB_ROTR64 (v, count); }
 
 #endif
 
 #if ECB_GCC_VERSION(4,3) || (ECB_CLANG_BUILTIN(__builtin_bswap32) && ECB_CLANG_BUILTIN(__builtin_bswap64))
 #if ECB_GCC_VERSION(4,8) || ECB_CLANG_BUILTIN(__builtin_bswap16)
-#define ecb_bswap16(x)  __builtin_bswap16 (x)
+#define ECB_BSWAP16(x)  __builtin_bswap16 (x)
 #else
-#define ecb_bswap16(x) (__builtin_bswap32 (x) >> 16)
+#define ECB_BSWAP16(x) (__builtin_bswap32 (x) >> 16)
 #endif
-#define ecb_bswap32(x)  __builtin_bswap32 (x)
-#define ecb_bswap64(x)  __builtin_bswap64 (x)
+#define ECB_BSWAP32(x)  __builtin_bswap32 (x)
+#define ECB_BSWAP64(x)  __builtin_bswap64 (x)
 #elif _MSC_VER
 #include <stdlib.h>
-#define ecb_bswap16(x) ((uint16_t)_byteswap_ushort ((uint16_t)(x)))
-#define ecb_bswap32(x) ((uint32_t)_byteswap_ulong  ((uint32_t)(x)))
-#define ecb_bswap64(x) ((uint64_t)_byteswap_uint64 ((uint64_t)(x)))
+#define ECB_BSWAP16(x) ((uint16_t)_byteswap_ushort ((uint16_t)(x)))
+#define ECB_BSWAP32(x) ((uint32_t)_byteswap_ulong  ((uint32_t)(x)))
+#define ECB_BSWAP64(x) ((uint64_t)_byteswap_uint64 ((uint64_t)(x)))
 #else
-ecb_function_ ecb_const uint16_t ecb_bswap16 (uint16_t x);
-    ecb_function_ ecb_const uint16_t
-ecb_bswap16 (uint16_t x)
+ECB_FUNCTION_ ECB_CONST uint16_t ECB_BSWAP16 (uint16_t x);
+    ECB_FUNCTION_ ECB_CONST uint16_t
+ECB_BSWAP16 (uint16_t x)
 {
-    return ecb_rotl16 (x, 8);
+    return ECB_ROTL16 (x, 8);
 }
 
-ecb_function_ ecb_const uint32_t ecb_bswap32 (uint32_t x);
-    ecb_function_ ecb_const uint32_t
-ecb_bswap32 (uint32_t x)
+ECB_FUNCTION_ ECB_CONST uint32_t ECB_BSWAP32 (uint32_t x);
+    ECB_FUNCTION_ ECB_CONST uint32_t
+ECB_BSWAP32 (uint32_t x)
 {
-    return (((uint32_t)ecb_bswap16 (x)) << 16) | ecb_bswap16 (x >> 16);
+    return (((uint32_t)ECB_BSWAP16 (x)) << 16) | ECB_BSWAP16 (x >> 16);
 }
 
-ecb_function_ ecb_const uint64_t ecb_bswap64 (uint64_t x);
-    ecb_function_ ecb_const uint64_t
-ecb_bswap64 (uint64_t x)
+ECB_FUNCTION_ ECB_CONST uint64_t ECB_BSWAP64 (uint64_t x);
+    ECB_FUNCTION_ ECB_CONST uint64_t
+ECB_BSWAP64 (uint64_t x)
 {
-    return (((uint64_t)ecb_bswap32 (x)) << 32) | ecb_bswap32 (x >> 32);
+    return (((uint64_t)ECB_BSWAP32 (x)) << 32) | ECB_BSWAP32 (x >> 32);
 }
 #endif
 
 #if ECB_GCC_VERSION(4,5) || ECB_CLANG_BUILTIN(__builtin_unreachable)
-#define ecb_unreachable() __builtin_unreachable ()
+#define ECB_UNREACHABLE() __builtin_unreachable ()
 #else
 /* this seems to work fine, but gcc always emits a warning for it :/ */
-ecb_inline ecb_noreturn void ecb_unreachable (void);
-ecb_inline ecb_noreturn void ecb_unreachable (void) { }
+ECB_INLINE ECB_NORETURN void ECB_UNREACHABLE (void);
+ECB_INLINE ECB_NORETURN void ECB_UNREACHABLE (void) { }
 #endif
 
 /* try to tell the compiler that some condition is definitely true */
-#define ecb_assume(cond) if (!(cond)) ecb_unreachable (); else 0
+#define ECB_ASSUME(cond) if (!(cond)) ECB_UNREACHABLE (); else 0
 
-ecb_inline ecb_const uint32_t ecb_byteorder_helper (void);
-    ecb_inline ecb_const uint32_t
-ecb_byteorder_helper (void)
+ECB_INLINE ECB_CONST uint32_t ECB_BYTEORDER_HELPER (void);
+    ECB_INLINE ECB_CONST uint32_t
+ECB_BYTEORDER_HELPER (void)
 {
     /* the union code still generates code under pressure in gcc, */
     /* but less than using pointers, and always seems to */
@@ -742,78 +751,78 @@ ecb_byteorder_helper (void)
 #endif
 }
 
-ecb_inline ecb_const ecb_bool ecb_big_endian    (void);
-ecb_inline ecb_const ecb_bool ecb_big_endian    (void) { return ecb_byteorder_helper () == 0x11223344; }
-ecb_inline ecb_const ecb_bool ecb_little_endian (void);
-ecb_inline ecb_const ecb_bool ecb_little_endian (void) { return ecb_byteorder_helper () == 0x44332211; }
+ECB_INLINE ECB_CONST ecb_bool ECB_BIG_ENDIAN    (void);
+ECB_INLINE ECB_CONST ecb_bool ECB_BIG_ENDIAN    (void) { return ECB_BYTEORDER_HELPER () == 0x11223344; }
+ECB_INLINE ECB_CONST ecb_bool ECB_LITTLE_ENDIAN (void);
+ECB_INLINE ECB_CONST ecb_bool ECB_LITTLE_ENDIAN (void) { return ECB_BYTEORDER_HELPER () == 0x44332211; }
 
 /*****************************************************************************/
 /* unaligned load/store */
 
-ecb_inline uint_fast16_t ecb_be_u16_to_host (uint_fast16_t v) { return ecb_little_endian () ? ecb_bswap16 (v) : v; }
-ecb_inline uint_fast32_t ecb_be_u32_to_host (uint_fast32_t v) { return ecb_little_endian () ? ecb_bswap32 (v) : v; }
-ecb_inline uint_fast64_t ecb_be_u64_to_host (uint_fast64_t v) { return ecb_little_endian () ? ecb_bswap64 (v) : v; }
+ECB_INLINE uint_fast16_t ECB_BE_U16_TO_HOST (uint_fast16_t v) { return ECB_LITTLE_ENDIAN () ? ECB_BSWAP16 (v) : v; }
+ECB_INLINE uint_fast32_t ECB_BE_U32_TO_HOST (uint_fast32_t v) { return ECB_LITTLE_ENDIAN () ? ECB_BSWAP32 (v) : v; }
+ECB_INLINE uint_fast64_t ECB_BE_U64_TO_HOST (uint_fast64_t v) { return ECB_LITTLE_ENDIAN () ? ECB_BSWAP64 (v) : v; }
 
-ecb_inline uint_fast16_t ecb_le_u16_to_host (uint_fast16_t v) { return ecb_big_endian    () ? ecb_bswap16 (v) : v; }
-ecb_inline uint_fast32_t ecb_le_u32_to_host (uint_fast32_t v) { return ecb_big_endian    () ? ecb_bswap32 (v) : v; }
-ecb_inline uint_fast64_t ecb_le_u64_to_host (uint_fast64_t v) { return ecb_big_endian    () ? ecb_bswap64 (v) : v; }
+ECB_INLINE uint_fast16_t ECB_LE_U16_TO_HOST (uint_fast16_t v) { return ECB_BIG_ENDIAN    () ? ECB_BSWAP16 (v) : v; }
+ECB_INLINE uint_fast32_t ECB_LE_U32_TO_HOST (uint_fast32_t v) { return ECB_BIG_ENDIAN    () ? ECB_BSWAP32 (v) : v; }
+ECB_INLINE uint_fast64_t ECB_LE_U64_TO_HOST (uint_fast64_t v) { return ECB_BIG_ENDIAN    () ? ECB_BSWAP64 (v) : v; }
 
-ecb_inline uint_fast16_t ecb_peek_u16_u (const void *ptr) { uint16_t v; memcpy (&v, ptr, sizeof (v)); return v; }
-ecb_inline uint_fast32_t ecb_peek_u32_u (const void *ptr) { uint32_t v; memcpy (&v, ptr, sizeof (v)); return v; }
-ecb_inline uint_fast64_t ecb_peek_u64_u (const void *ptr) { uint64_t v; memcpy (&v, ptr, sizeof (v)); return v; }
+ECB_INLINE uint_fast16_t ECB_PEEK_U16_U (const void *ptr) { uint16_t v; memcpy (&v, ptr, sizeof (v)); return v; }
+ECB_INLINE uint_fast32_t ECB_PEEK_U32_U (const void *ptr) { uint32_t v; memcpy (&v, ptr, sizeof (v)); return v; }
+ECB_INLINE uint_fast64_t ECB_PEEK_U64_U (const void *ptr) { uint64_t v; memcpy (&v, ptr, sizeof (v)); return v; }
 
-ecb_inline uint_fast16_t ecb_peek_be_u16_u (const void *ptr) { return ecb_be_u16_to_host (ecb_peek_u16_u (ptr)); }
-ecb_inline uint_fast32_t ecb_peek_be_u32_u (const void *ptr) { return ecb_be_u32_to_host (ecb_peek_u32_u (ptr)); }
-ecb_inline uint_fast64_t ecb_peek_be_u64_u (const void *ptr) { return ecb_be_u64_to_host (ecb_peek_u64_u (ptr)); }
+ECB_INLINE uint_fast16_t ECB_PEEK_BE_U16_U (const void *ptr) { return ECB_BE_U16_TO_HOST (ecb_peek_u16_u (ptr)); }
+ECB_INLINE uint_fast32_t ECB_PEEK_BE_U32_U (const void *ptr) { return ECB_BE_U32_TO_HOST (ecb_peek_u32_u (ptr)); }
+ECB_INLINE uint_fast64_t ECB_PEEK_BE_U64_U (const void *ptr) { return ECB_BE_U64_TO_HOST (ecb_peek_u64_u (ptr)); }
 
-ecb_inline uint_fast16_t ecb_peek_le_u16_u (const void *ptr) { return ecb_le_u16_to_host (ecb_peek_u16_u (ptr)); }
-ecb_inline uint_fast32_t ecb_peek_le_u32_u (const void *ptr) { return ecb_le_u32_to_host (ecb_peek_u32_u (ptr)); }
-ecb_inline uint_fast64_t ecb_peek_le_u64_u (const void *ptr) { return ecb_le_u64_to_host (ecb_peek_u64_u (ptr)); }
+ECB_INLINE uint_fast16_t ECB_PEEK_LE_U16_U (const void *ptr) { return ECB_LE_U16_TO_HOST (ECB_PEEK_U16_U (ptr)); }
+ECB_INLINE uint_fast32_t ECB_PEEK_LE_U32_U (const void *ptr) { return ECB_LE_U32_TO_HOST (ECB_PEEK_U32_U (ptr)); }
+ECB_INLINE uint_fast64_t ECB_PEEK_LE_U64_U (const void *ptr) { return ECB_LE_U64_TO_HOST (ECB_PEEK_U64_U (ptr)); }
 
-ecb_inline uint_fast16_t ecb_host_to_be_u16 (uint_fast16_t v) { return ecb_little_endian () ? ecb_bswap16 (v) : v; }
-ecb_inline uint_fast32_t ecb_host_to_be_u32 (uint_fast32_t v) { return ecb_little_endian () ? ecb_bswap32 (v) : v; }
-ecb_inline uint_fast64_t ecb_host_to_be_u64 (uint_fast64_t v) { return ecb_little_endian () ? ecb_bswap64 (v) : v; }
+ECB_INLINE uint_fast16_t ECB_HOST_TO_BE_U16 (uint_fast16_t v) { return ECB_LITTLE_ENDIAN () ? ECB_BSWAP16 (v) : v; }
+ECB_INLINE uint_fast32_t ECB_HOST_TO_BE_U32 (uint_fast32_t v) { return ECB_LITTLE_ENDIAN () ? ECB_BSWAP32 (v) : v; }
+ECB_INLINE uint_fast64_t ECB_HOST_TO_BE_U64 (uint_fast64_t v) { return ECB_LITTLE_ENDIAN () ? ECB_BSWAP64 (v) : v; }
 
-ecb_inline uint_fast16_t ecb_host_to_le_u16 (uint_fast16_t v) { return ecb_big_endian    () ? ecb_bswap16 (v) : v; }
-ecb_inline uint_fast32_t ecb_host_to_le_u32 (uint_fast32_t v) { return ecb_big_endian    () ? ecb_bswap32 (v) : v; }
-ecb_inline uint_fast64_t ecb_host_to_le_u64 (uint_fast64_t v) { return ecb_big_endian    () ? ecb_bswap64 (v) : v; }
+ECB_INLINE uint_fast16_t ECB_HOST_TO_LE_U16 (uint_fast16_t v) { return ECB_BIG_ENDIAN    () ? ECB_BSWAP16 (v) : v; }
+ECB_INLINE uint_fast32_t ECB_HOST_TO_LE_U32 (uint_fast32_t v) { return ECB_BIG_ENDIAN    () ? ECB_BSWAP32 (v) : v; }
+ECB_INLINE uint_fast64_t ECB_HOST_TO_LE_U64 (uint_fast64_t v) { return ECB_BIG_ENDIAN    () ? ECB_BSWAP64 (v) : v; }
 
-ecb_inline void ecb_poke_u16_u (void *ptr, uint16_t v) { memcpy (ptr, &v, sizeof (v)); }
-ecb_inline void ecb_poke_u32_u (void *ptr, uint32_t v) { memcpy (ptr, &v, sizeof (v)); }
-ecb_inline void ecb_poke_u64_u (void *ptr, uint64_t v) { memcpy (ptr, &v, sizeof (v)); }
+ECB_INLINE void ECB_POKE_U16_U (void *ptr, uint16_t v) { memcpy (ptr, &v, sizeof (v)); }
+ECB_INLINE void ECB_POKE_U32_U (void *ptr, uint32_t v) { memcpy (ptr, &v, sizeof (v)); }
+ECB_INLINE void ECB_POKE_U64_U (void *ptr, uint64_t v) { memcpy (ptr, &v, sizeof (v)); }
 
-ecb_inline void ecb_poke_be_u16_u (void *ptr, uint_fast16_t v) { ecb_poke_u16_u (ptr, ecb_host_to_be_u16 (v)); }
-ecb_inline void ecb_poke_be_u32_u (void *ptr, uint_fast32_t v) { ecb_poke_u32_u (ptr, ecb_host_to_be_u32 (v)); }
-ecb_inline void ecb_poke_be_u64_u (void *ptr, uint_fast64_t v) { ecb_poke_u64_u (ptr, ecb_host_to_be_u64 (v)); }
+ECB_INLINE void ECB_POKE_BE_U16_U (void *ptr, uint_fast16_t v) { ECB_POKE_U16_U (ptr, ECB_HOST_TO_BE_U16 (v)); }
+ECB_INLINE void ECB_POKE_BE_U32_U (void *ptr, uint_fast32_t v) { ECB_POKE_U32_U (ptr, ECB_HOST_TO_BE_U32 (v)); }
+ECB_INLINE void ECB_POKE_BE_U64_U (void *ptr, uint_fast64_t v) { ECB_POKE_U64_U (ptr, ECB_HOST_TO_BE_U64 (v)); }
 
-ecb_inline void ecb_poke_le_u16_u (void *ptr, uint_fast16_t v) { ecb_poke_u16_u (ptr, ecb_host_to_le_u16 (v)); }
-ecb_inline void ecb_poke_le_u32_u (void *ptr, uint_fast32_t v) { ecb_poke_u32_u (ptr, ecb_host_to_le_u32 (v)); }
-ecb_inline void ecb_poke_le_u64_u (void *ptr, uint_fast64_t v) { ecb_poke_u64_u (ptr, ecb_host_to_le_u64 (v)); }
+ECB_INLINE void ECB_POKE_LE_U16_U (void *ptr, uint_fast16_t v) { ECB_POKE_U16_U (ptr, ECB_HOST_TO_LE_U16 (v)); }
+ECB_INLINE void ECB_POKE_LE_U32_U (void *ptr, uint_fast32_t v) { ECB_POKE_U32_U (ptr, ECB_HOST_TO_LE_U32 (v)); }
+ECB_INLINE void ECB_POKE_LE_U64_U (void *ptr, uint_fast64_t v) { ECB_POKE_U64_U (ptr, ECB_HOST_TO_LE_U64 (v)); }
 
 #if ECB_CPP
 
-inline uint8_t  ecb_bswap (uint8_t  v) { return v; }
-inline uint16_t ecb_bswap (uint16_t v) { return ecb_bswap16 (v); }
-inline uint32_t ecb_bswap (uint32_t v) { return ecb_bswap32 (v); }
-inline uint64_t ecb_bswap (uint64_t v) { return ecb_bswap64 (v); }
+inline uint8_t  ECB_BSWAP (uint8_t  v) { return v; }
+inline uint16_t ECB_BSWAP (uint16_t v) { return ECB_BSWAP16 (v); }
+inline uint32_t ECB_BSWAP (uint32_t v) { return ECB_BSWAP32 (v); }
+inline uint64_t ECB_BSWAP (uint64_t v) { return ECB_BSWAP64 (v); }
 
-template<typename T> inline T ecb_be_to_host (T v) { return ecb_little_endian () ? ecb_bswap (v) : v; }
-template<typename T> inline T ecb_le_to_host (T v) { return ecb_big_endian    () ? ecb_bswap (v) : v; }
-template<typename T> inline T ecb_peek       (const void *ptr) { return *(const T *)ptr; }
-template<typename T> inline T ecb_peek_be    (const void *ptr) { return ecb_be_to_host (ecb_peek  <T> (ptr)); }
-template<typename T> inline T ecb_peek_le    (const void *ptr) { return ecb_le_to_host (ecb_peek  <T> (ptr)); }
-template<typename T> inline T ecb_peek_u     (const void *ptr) { T v; memcpy (&v, ptr, sizeof (v)); return v; }
-template<typename T> inline T ecb_peek_be_u  (const void *ptr) { return ecb_be_to_host (ecb_peek_u<T> (ptr)); }
-template<typename T> inline T ecb_peek_le_u  (const void *ptr) { return ecb_le_to_host (ecb_peek_u<T> (ptr)); }
+template<typename T> inline T ECB_BE_TO_HOST (T v) { return ECB_LITTLE_ENDIAN () ? ECB_BSWAP (v) : v; }
+template<typename T> inline T ECB_LE_TO_HOST (T v) { return ECB_BIG_ENDIAN    () ? ECB_BSWAP (v) : v; }
+template<typename T> inline T ECB_PEEK       (const void *ptr) { return *(const T *)ptr; }
+template<typename T> inline T ECB_PEEK_BE    (const void *ptr) { return ECB_BE_TO_HOST (ECB_PEEK  <T> (ptr)); }
+template<typename T> inline T ECB_PEEK_LE    (const void *ptr) { return ECB_LE_TO_HOST (ECB_PEEK  <T> (ptr)); }
+template<typename T> inline T ECB_PEEK_U     (const void *ptr) { T v; memcpy (&v, ptr, sizeof (v)); return v; }
+template<typename T> inline T ECB_PEEK_BE_U  (const void *ptr) { return ECB_BE_TO_HOST (ECB_PEEK_U<T> (ptr)); }
+template<typename T> inline T ECB_PEEK_LE_U  (const void *ptr) { return ECB_LE_TO_HOST (ECB_PEEK_U<T> (ptr)); }
 
-template<typename T> inline T ecb_host_to_be (T v) { return ecb_little_endian () ? ecb_bswap (v) : v; }
-template<typename T> inline T ecb_host_to_le (T v) { return ecb_big_endian    () ? ecb_bswap (v) : v; }
-template<typename T> inline void ecb_poke      (void *ptr, T v) { *(T *)ptr = v; }
-template<typename T> inline void ecb_poke_be   (void *ptr, T v) { return ecb_poke  <T> (ptr, ecb_host_to_be (v)); }
-template<typename T> inline void ecb_poke_le   (void *ptr, T v) { return ecb_poke  <T> (ptr, ecb_host_to_le (v)); }
-template<typename T> inline void ecb_poke_u    (void *ptr, T v) { memcpy (ptr, &v, sizeof (v)); }
-template<typename T> inline void ecb_poke_be_u (void *ptr, T v) { return ecb_poke_u<T> (ptr, ecb_host_to_be (v)); }
-template<typename T> inline void ecb_poke_le_u (void *ptr, T v) { return ecb_poke_u<T> (ptr, ecb_host_to_le (v)); }
+template<typename T> inline T ECB_HOST_TO_BE (T v) { return ECB_LITTLE_ENDIAN () ? ECB_BSWAP (v) : v; }
+template<typename T> inline T ECB_HOST_TO_LE (T v) { return ECB_BIG_ENDIAN    () ? ECB_BSWAP (v) : v; }
+template<typename T> inline void ECB_POKE      (void *ptr, T v) { *(T *)ptr = v; }
+template<typename T> inline void ECB_POKE_BE   (void *ptr, T v) { return ECB_POKE  <T> (ptr, ECB_HOST_TO_BE (v)); }
+template<typename T> inline void ECB_POKE_LE   (void *ptr, T v) { return ECB_POKE  <T> (ptr, ECB_HOST_TO_LE (v)); }
+template<typename T> inline void ECB_POKE_U    (void *ptr, T v) { memcpy (ptr, &v, sizeof (v)); }
+template<typename T> inline void ECB_POKE_BE_U (void *ptr, T v) { return ECB_POKE_U<T> (ptr, ECB_HOST_TO_BE (v)); }
+template<typename T> inline void ECB_POKE_LE_U (void *ptr, T v) { return ECB_POKE_U<T> (ptr, ECB_HOST_TO_LE (v)); }
 
 #endif
 
@@ -821,8 +830,8 @@ template<typename T> inline void ecb_poke_le_u (void *ptr, T v) { return ecb_pok
 /* pointer/integer hashing */
 
 /* based on hash by Chris Wellons, https://nullprogram.com/blog/2018/07/31/ */
-ecb_function_ uint32_t ecb_mix32 (uint32_t v);
-ecb_function_ uint32_t ecb_mix32 (uint32_t v)
+ECB_FUNCTION_ uint32_t ECB_MIX32 (uint32_t v);
+ECB_FUNCTION_ uint32_t ECB_MIX32 (uint32_t v)
 {
     v ^= v >> 16; v *= 0x7feb352dU;
     v ^= v >> 15; v *= 0x846ca68bU;
@@ -830,8 +839,8 @@ ecb_function_ uint32_t ecb_mix32 (uint32_t v)
     return v;
 }
 
-ecb_function_ uint32_t ecb_unmix32 (uint32_t v);
-ecb_function_ uint32_t ecb_unmix32 (uint32_t v)
+ECB_FUNCTION_ uint32_t ECB_UNMIX32 (uint32_t v);
+ECB_FUNCTION_ uint32_t ECB_UNMIX32 (uint32_t v)
 {
     v ^= v >> 16          ; v *= 0x43021123U;
     v ^= v >> 15 ^ v >> 30; v *= 0x1d69e2a5U;
@@ -840,8 +849,8 @@ ecb_function_ uint32_t ecb_unmix32 (uint32_t v)
 }
 
 /* based on splitmix64, by Sebastiona Vigna, https://prng.di.unimi.it/splitmix64.c */
-ecb_function_ uint64_t ecb_mix64 (uint64_t v);
-ecb_function_ uint64_t ecb_mix64 (uint64_t v)
+ECB_FUNCTION_ uint64_t ECB_MIX64 (uint64_t v);
+ECB_FUNCTION_ uint64_t ECB_MIX64 (uint64_t v)
 {
     v ^= v >> 30; v *= 0xbf58476d1ce4e5b9U;
     v ^= v >> 27; v *= 0x94d049bb133111ebU;
@@ -849,8 +858,8 @@ ecb_function_ uint64_t ecb_mix64 (uint64_t v)
     return v;
 }
 
-ecb_function_ uint64_t ecb_unmix64 (uint64_t v);
-ecb_function_ uint64_t ecb_unmix64 (uint64_t v)
+ECB_FUNCTION_ uint64_t ECB_UNMIX64 (uint64_t v);
+ECB_FUNCTION_ uint64_t ECB_UNMIX64 (uint64_t v)
 {
     v ^= v >> 31 ^ v >> 62; v *= 0x319642b2d24d8ec3U;
     v ^= v >> 27 ^ v >> 54; v *= 0x96de1b173f119089U;
@@ -858,38 +867,38 @@ ecb_function_ uint64_t ecb_unmix64 (uint64_t v)
     return v;
 }
 
-ecb_function_ uintptr_t ecb_ptrmix (void *p);
-ecb_function_ uintptr_t ecb_ptrmix (void *p)
+ECB_FUNCTION_ uintptr_t ECB_PTRMIX (void *p);
+ECB_FUNCTION_ uintptr_t ECB_PTRMIX (void *p)
 {
 #if ECB_PTRSIZE <= 4
-    return ecb_mix32 ((uint32_t)p);
+    return ECB_MIX32 ((uint32_t)p);
 #else
-    return ecb_mix64 ((uint64_t)p);
+    return ECB_MIX64 ((uint64_t)p);
 #endif
 }
 
-ecb_function_ void *ecb_ptrunmix (uintptr_t v);
-ecb_function_ void *ecb_ptrunmix (uintptr_t v)
+ECB_FUNCTION_ void *ECB_PTRUNMIX (uintptr_t v);
+ECB_FUNCTION_ void *ECB_PTRUNMIX (uintptr_t v)
 {
 #if ECB_PTRSIZE <= 4
-    return (void *)ecb_unmix32 (v);
+    return (void *)ECB_UNMIX32 (v);
 #else
-    return (void *)ecb_unmix64 (v);
+    return (void *)ECB_UNMIX64 (v);
 #endif
 }
 
 #if ECB_CPP
 
     template<typename T>
-inline uintptr_t ecb_ptrmix (T *p)
+inline uintptr_t ECB_PTRMIX (T *p)
 {
-    return ecb_ptrmix (static_cast<void *>(p));
+    return ECB_PTRMIX (static_cast<void *>(p));
 }
 
     template<typename T>
-inline T *ecb_ptrunmix (uintptr_t v)
+inline T *ECB_PTRUNMIX (uintptr_t v)
 {
-    return static_cast<T *>(ecb_ptrunmix (v));
+    return static_cast<T *>(ECB_PTRUNMIX (v));
 }
 
 #endif
@@ -899,25 +908,25 @@ inline T *ecb_ptrunmix (uintptr_t v)
 
 #if ECB_GCC_VERSION(3,0) || ECB_C99
 /* C99 tightened the definition of %, so we can use a more efficient version */
-#define ecb_mod(m,n) ((m) % (n) + ((m) % (n) < 0 ? (n) : 0))
+#define ECB_MOD(m,n) ((m) % (n) + ((m) % (n) < 0 ? (n) : 0))
 #else
-#define ecb_mod(m,n) ((m) < 0 ? ((n) - 1 - ((-1 - (m)) % (n))) : ((m) % (n)))
+#define ECB_MOD(m,n) ((m) < 0 ? ((n) - 1 - ((-1 - (m)) % (n))) : ((m) % (n)))
 #endif
 
 #if ECB_CPP
     template<typename T>
-static inline T ecb_div_rd (T val, T div)
+static inline T ECB_DIV_RD (T val, T div)
 {
     return val < 0 ? - ((-val + div - 1) / div) : (val          ) / div;
 }
     template<typename T>
-static inline T ecb_div_ru (T val, T div)
+static inline T ECB_DIV_RU (T val, T div)
 {
     return val < 0 ? - ((-val          ) / div) : (val + div - 1) / div;
 }
 #else
-#define ecb_div_rd(val,div) ((val) < 0 ? - ((-(val) + (div) - 1) / (div)) : ((val)            ) / (div))
-#define ecb_div_ru(val,div) ((val) < 0 ? - ((-(val)            ) / (div)) : ((val) + (div) - 1) / (div))
+#define ECB_DIV_RD(val,div) ((val) < 0 ? - ((-(val) + (div) - 1) / (div)) : ((val)            ) / (div))
+#define ECB_DIV_RU(val,div) ((val) < 0 ? - ((-(val)            ) / (div)) : ((val) + (div) - 1) / (div))
 #endif
 
 /*****************************************************************************/
@@ -926,37 +935,37 @@ static inline T ecb_div_ru (T val, T div)
 #if ecb_cplusplus_does_not_suck
 /* does not work for local types (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2657.htm) */
     template<typename T, int N>
-static inline int ecb_array_length (const T (&arr)[N])
+static inline int ECB_ARRAY_LENGTH (const T (&arr)[N])
 {
     return N;
 }
 #else
-#define ecb_array_length(name) (sizeof (name) / sizeof (name [0]))
+#define ECB_ARRAY_LENGTH(name) (sizeof (name) / sizeof (name [0]))
 #endif
 
 /*****************************************************************************/
 /* IEEE 754-2008 half float conversions */
 
-ecb_function_ ecb_const uint32_t ecb_binary16_to_binary32 (uint32_t x);
-    ecb_function_ ecb_const uint32_t
-ecb_binary16_to_binary32 (uint32_t x)
+ECB_FUNCTION_ ECB_CONST uint32_t ECB_BINARY16_TO_BINARY32 (uint32_t x);
+    ECB_FUNCTION_ ECB_CONST uint32_t
+ECB_BINARY16_TO_BINARY32 (uint32_t x)
 {
     unsigned int s = (x & 0x8000) << (31 - 15);
     int          e = (x >> 10) & 0x001f;
     unsigned int m =  x        & 0x03ff;
 
-    if (ecb_expect_false (e == 31))
+    if (ECB_EXPECT_FALSE (e == 31))
         /* infinity or NaN */
         e = 255 - (127 - 15);
-    else if (ecb_expect_false (!e))
+    else if (ECB_EXPECT_FALSE (!e))
     {
-        if (ecb_expect_true (!m))
+        if (ECB_EXPECT_TRUE (!m))
             /* zero, handled by code below by forcing e to 0 */
             e = 0 - (127 - 15);
         else
         {
             /* subnormal, renormalise */
-            unsigned int s = 10 - ecb_ld32 (m);
+            unsigned int s = 10 - ECB_LD32 (m);
 
             m = (m << s) & 0x3ff; /* mask implicit bit */
             e -= s - 1;
@@ -969,9 +978,9 @@ ecb_binary16_to_binary32 (uint32_t x)
     return s | (e << 23) | (m << (23 - 10));
 }
 
-ecb_function_ ecb_const uint16_t ecb_binary32_to_binary16 (uint32_t x);
-    ecb_function_ ecb_const uint16_t
-ecb_binary32_to_binary16 (uint32_t x)
+ECB_FUNCTION_ ECB_CONST uint16_t ECB_BINARY32_TO_BINARY16 (uint32_t x);
+    ECB_FUNCTION_ ECB_CONST uint16_t
+ECB_BINARY32_TO_BINARY16 (uint32_t x)
 {
     unsigned int s =  (x >> 16) & 0x00008000; /* sign bit, the easy part */
     int          e = ((x >> 23) & 0x000000ff) - (127 - 15); /* the desired exponent */
@@ -980,13 +989,13 @@ ecb_binary32_to_binary16 (uint32_t x)
     x &= 0x7fffffff;
 
     /* if it's within range of binary16 normals, use fast path */
-    if (ecb_expect_true (0x38800000 <= x && x <= 0x477fefff))
+    if (ECB_EXPECT_TRUE (0x38800000 <= x && x <= 0x477fefff))
     {
         /* mantissa round-to-even */
         m += 0x00000fff + ((m >> (23 - 10)) & 1);
 
         /* handle overflow */
-        if (ecb_expect_false (m >= 0x00800000))
+        if (ECB_EXPECT_FALSE (m >= 0x00800000))
         {
             m >>= 1;
             e +=  1;
@@ -996,14 +1005,14 @@ ecb_binary32_to_binary16 (uint32_t x)
     }
 
     /* handle large numbers and infinity */
-    if (ecb_expect_true (0x477fefff < x && x <= 0x7f800000))
+    if (ECB_EXPECT_TRUE (0x477fefff < x && x <= 0x7f800000))
         return s | 0x7c00;
 
     /* handle zero, subnormals and small numbers */
-    if (ecb_expect_true (x < 0x38800000))
+    if (ECB_EXPECT_TRUE (x < 0x38800000))
     {
         /* zero */
-        if (ecb_expect_true (!x))
+        if (ECB_EXPECT_TRUE (!x))
             return s;
 
         /* handle subnormals */
@@ -1050,38 +1059,38 @@ ecb_binary32_to_binary16 (uint32_t x)
  */
 
 /* simply return a mask with "bits" bits set */
-#define ecb_i2a_mask(type,bits) ((((type)1) << (bits)) - 1)
+#define ECB_I2A_MASK(type,bits) ((((type)1) << (bits)) - 1)
 
 /* oputput a single digit. maskvalue is 10**digitidx */
-#define ecb_i2a_digit(type,bits,digitmask,maskvalue,digitidx) \
+#define ECB_I2A_DIGIT(type,bits,digitmask,maskvalue,digitidx) \
     if (digitmask >= maskvalue) /* constant, used to decide how many digits to generate */ \
 { \
     char digit = x >> (bits - digitidx); /* calculate the topmost digit */ \
     *ptr = digit + '0'; /* output it */ \
     nz = (digitmask == maskvalue) || nz || digit; /* first term == always output last digit */ \
     ptr += nz; /* output digit only if non-zero digit seen */ \
-    x = (x & ecb_i2a_mask (type, bits - digitidx)) * 5; /* *10, but shift decimal point right */ \
+    x = (x & ECB_I2A_MASK (type, bits - digitidx)) * 5; /* *10, but shift decimal point right */ \
 }
 
 /* convert integer to fixed point format and multiply out digits, highest first */
 /* requires magic constants: max. digits and number of bits after the decimal point */
-#define ecb_i2a_def(suffix,ptr,v,type,bits,digitmask,lz) \
-    ecb_inline char *ecb_i2a_ ## suffix (char *ptr, uint32_t u) \
+#define ECB_I2A_DEF(suffix,ptr,v,type,bits,digitmask,lz) \
+    ECB_INLINE char *ECB_I2A_ ## suffix (char *ptr, uint32_t u) \
 { \
     char nz = lz; /* non-zero digit seen? */ \
     /* convert to x.bits fixed-point */ \
-    type x = u * ((ecb_i2a_mask (type, bits) + digitmask) / digitmask); \
+    type x = u * ((ECB_I2A_MASK (type, bits) + digitmask) / digitmask); \
     /* output up to 10 digits */ \
-    ecb_i2a_digit (type,bits,digitmask,          1, 0); \
-    ecb_i2a_digit (type,bits,digitmask,         10, 1); \
-    ecb_i2a_digit (type,bits,digitmask,        100, 2); \
-    ecb_i2a_digit (type,bits,digitmask,       1000, 3); \
-    ecb_i2a_digit (type,bits,digitmask,      10000, 4); \
-    ecb_i2a_digit (type,bits,digitmask,     100000, 5); \
-    ecb_i2a_digit (type,bits,digitmask,    1000000, 6); \
-    ecb_i2a_digit (type,bits,digitmask,   10000000, 7); \
-    ecb_i2a_digit (type,bits,digitmask,  100000000, 8); \
-    ecb_i2a_digit (type,bits,digitmask, 1000000000, 9); \
+    ECB_I2A_DIGIT (type,bits,digitmask,          1, 0); \
+    ECB_I2A_DIGIT (type,bits,digitmask,         10, 1); \
+    ECB_I2A_DIGIT (type,bits,digitmask,        100, 2); \
+    ECB_I2A_DIGIT (type,bits,digitmask,       1000, 3); \
+    ECB_I2A_DIGIT (type,bits,digitmask,      10000, 4); \
+    ECB_I2A_DIGIT (type,bits,digitmask,     100000, 5); \
+    ECB_I2A_DIGIT (type,bits,digitmask,    1000000, 6); \
+    ECB_I2A_DIGIT (type,bits,digitmask,   10000000, 7); \
+    ECB_I2A_DIGIT (type,bits,digitmask,  100000000, 8); \
+    ECB_I2A_DIGIT (type,bits,digitmask, 1000000000, 9); \
     return ptr; \
 }
 
@@ -1093,28 +1102,28 @@ ecb_binary32_to_binary16 (uint32_t x)
 /* non-leading-zero versions, limited range */
 #define ECB_I2A_MAX_X5       59074 /* limit for ecb_i2a_x5 */
 #define ECB_I2A_MAX_X10 2932500665 /* limit for ecb_i2a_x10 */
-    ecb_i2a_def ( x5, ptr, v, uint32_t, 26,      10000, 0)
-ecb_i2a_def (x10, ptr, v, uint64_t, 60, 1000000000, 0)
+    ECB_I2A_DEF ( x5, ptr, v, uint32_t, 26,      10000, 0)
+ECB_I2A_DEF (x10, ptr, v, uint64_t, 60, 1000000000, 0)
 
     /* non-leading zero versions, all digits, 4 and 9 are optimal for 32/64 bit */
-    ecb_i2a_def ( 2, ptr, v, uint32_t, 10,          10, 0)
-    ecb_i2a_def ( 3, ptr, v, uint32_t, 12,         100, 0)
-    ecb_i2a_def ( 4, ptr, v, uint32_t, 26,        1000, 0)
-    ecb_i2a_def ( 5, ptr, v, uint64_t, 30,       10000, 0)
-    ecb_i2a_def ( 6, ptr, v, uint64_t, 36,      100000, 0)
-    ecb_i2a_def ( 7, ptr, v, uint64_t, 44,     1000000, 0)
-    ecb_i2a_def ( 8, ptr, v, uint64_t, 50,    10000000, 0)
-ecb_i2a_def ( 9, ptr, v, uint64_t, 56,   100000000, 0)
+    ECB_I2A_DEF ( 2, ptr, v, uint32_t, 10,          10, 0)
+    ECB_I2A_DEF ( 3, ptr, v, uint32_t, 12,         100, 0)
+    ECB_I2A_DEF ( 4, ptr, v, uint32_t, 26,        1000, 0)
+    ECB_I2A_DEF ( 5, ptr, v, uint64_t, 30,       10000, 0)
+    ECB_I2A_DEF ( 6, ptr, v, uint64_t, 36,      100000, 0)
+    ECB_I2A_DEF ( 7, ptr, v, uint64_t, 44,     1000000, 0)
+    ECB_I2A_DEF ( 8, ptr, v, uint64_t, 50,    10000000, 0)
+ECB_I2A_DEF ( 9, ptr, v, uint64_t, 56,   100000000, 0)
 
     /* leading-zero versions, all digits, 04 and 09 are optimal for 32/64 bit */
-    ecb_i2a_def (02, ptr, v, uint32_t, 10,          10, 1)
-    ecb_i2a_def (03, ptr, v, uint32_t, 12,         100, 1)
-    ecb_i2a_def (04, ptr, v, uint32_t, 26,        1000, 1)
-    ecb_i2a_def (05, ptr, v, uint64_t, 30,       10000, 1)
-    ecb_i2a_def (06, ptr, v, uint64_t, 36,      100000, 1)
-    ecb_i2a_def (07, ptr, v, uint64_t, 44,     1000000, 1)
-    ecb_i2a_def (08, ptr, v, uint64_t, 50,    10000000, 1)
-ecb_i2a_def (09, ptr, v, uint64_t, 56,   100000000, 1)
+    ECB_I2A_DEF (02, ptr, v, uint32_t, 10,          10, 1)
+    ECB_I2A_DEF (03, ptr, v, uint32_t, 12,         100, 1)
+    ECB_I2A_DEF (04, ptr, v, uint32_t, 26,        1000, 1)
+    ECB_I2A_DEF (05, ptr, v, uint64_t, 30,       10000, 1)
+    ECB_I2A_DEF (06, ptr, v, uint64_t, 36,      100000, 1)
+    ECB_I2A_DEF (07, ptr, v, uint64_t, 44,     1000000, 1)
+    ECB_I2A_DEF (08, ptr, v, uint64_t, 50,    10000000, 1)
+ECB_I2A_DEF (09, ptr, v, uint64_t, 56,   100000000, 1)
 
 #define ECB_I2A_I32_DIGITS 11
 #define ECB_I2A_U32_DIGITS 10
@@ -1122,30 +1131,30 @@ ecb_i2a_def (09, ptr, v, uint64_t, 56,   100000000, 1)
 #define ECB_I2A_U64_DIGITS 21
 #define ECB_I2A_MAX_DIGITS 21
 
-    ecb_inline char *
-ecb_i2a_u32 (char *ptr, uint32_t u)
+    ECB_INLINE char *
+ECB_I2A_U32 (char *ptr, uint32_t u)
 {
 #if ECB_64BIT_NATIVE
-    if (ecb_expect_true (u <= ECB_I2A_MAX_X10))
-        ptr = ecb_i2a_x10 (ptr, u);
+    if (ECB_EXPECT_TRUE (u <= ECB_I2A_MAX_X10))
+        ptr = ECB_I2A_X10 (ptr, u);
     else /* x10 almost, but not fully, covers 32 bit */
     {
         uint32_t u1 = u % 1000000000;
         uint32_t u2 = u / 1000000000;
 
         *ptr++ = u2 + '0';
-        ptr = ecb_i2a_09 (ptr, u1);
+        ptr = ECB_I2A_09 (ptr, u1);
     }
 #else
-    if (ecb_expect_true (u <= ECB_I2A_MAX_X5))
-        ecb_i2a_x5 (ptr, u);
-    else if (ecb_expect_true (u <= ECB_I2A_MAX_X5 * 10000))
+    if (ECB_EXPECT_TRUE (u <= ECB_I2A_MAX_X5))
+        ECB_I2A_X5 (ptr, u);
+    else if (ECB_EXPECT_TRUE (u <= ECB_I2A_MAX_X5 * 10000))
     {
         uint32_t u1 = u % 10000;
         uint32_t u2 = u / 10000;
 
-        ptr = ecb_i2a_x5 (ptr, u2);
-        ptr = ecb_i2a_04 (ptr, u1);
+        ptr = ECB_I2A_X5 (ptr, u2);
+        ptr = ECB_I2A_04 (ptr, u1);
     }
     else
     {
@@ -1154,43 +1163,43 @@ ecb_i2a_u32 (char *ptr, uint32_t u)
         uint32_t u2 = ua % 10000;
         uint32_t u3 = ua / 10000;
 
-        ptr = ecb_i2a_2  (ptr, u3);
-        ptr = ecb_i2a_04 (ptr, u2);
-        ptr = ecb_i2a_04 (ptr, u1);
+        ptr = ECB_I2A_2  (ptr, u3);
+        ptr = ECB_I2A_04 (ptr, u2);
+        ptr = ECB_I2A_04 (ptr, u1);
     }
 #endif
 
     return ptr;
 }
 
-    ecb_inline char *
-ecb_i2a_i32 (char *ptr, int32_t v)
+    ECB_INLINE char *
+ECB_I2A_I32 (char *ptr, int32_t v)
 {
     *ptr = '-'; ptr += v < 0;
     uint32_t u = v < 0 ? -(uint32_t)v : v;
 
 #if ECB_64BIT_NATIVE
-    ptr = ecb_i2a_x10 (ptr, u); /* x10 fully covers 31 bit */
+    ptr = ECB_I2A_X10 (ptr, u); /* x10 fully covers 31 bit */
 #else
-    ptr = ecb_i2a_u32 (ptr, u);
+    ptr = ECB_I2A_U32 (ptr, u);
 #endif
 
     return ptr;
 }
 
-    ecb_inline char *
-ecb_i2a_u64 (char *ptr, uint64_t u)
+    ECB_INLINE char *
+ECB_I2A_U64 (char *ptr, uint64_t u)
 {
 #if ECB_64BIT_NATIVE
-    if (ecb_expect_true (u <= ECB_I2A_MAX_X10))
-        ptr = ecb_i2a_x10 (ptr, u);
-    else if (ecb_expect_false (u <= ECB_I2A_MAX_X10 * 1000000000))
+    if (ECB_EXPECT_TRUE (u <= ECB_I2A_MAX_X10))
+        ptr = ECB_I2A_X10 (ptr, u);
+    else if (ECB_EXPECT_FALSE (u <= ECB_I2A_MAX_X10 * 1000000000))
     {
         uint64_t u1 = u % 1000000000;
         uint64_t u2 = u / 1000000000;
 
-        ptr = ecb_i2a_x10 (ptr, u2);
-        ptr = ecb_i2a_09  (ptr, u1);
+        ptr = ECB_I2A_X10 (ptr, u2);
+        ptr = ECB_I2A_09  (ptr, u1);
     }
     else
     {
@@ -1199,42 +1208,42 @@ ecb_i2a_u64 (char *ptr, uint64_t u)
         uint64_t u2 = ua % 1000000000;
         uint64_t u3 = ua / 1000000000;
 
-        ptr = ecb_i2a_2  (ptr, u3);
-        ptr = ecb_i2a_09 (ptr, u2);
-        ptr = ecb_i2a_09 (ptr, u1);
+        ptr = ECB_I2A_2  (ptr, u3);
+        ptr = ECB_I2A_09 (ptr, u2);
+        ptr = ECB_I2A_09 (ptr, u1);
     }
 #else
-    if (ecb_expect_true (u <= ECB_I2A_MAX_X5))
-        ptr = ecb_i2a_x5 (ptr, u);
+    if (ECB_EXPECT_TRUE (u <= ECB_I2A_MAX_X5))
+        ptr = ECB_I2A_X5 (ptr, u);
     else
     {
         uint64_t u1 = u % 10000;
         uint64_t u2 = u / 10000;
 
-        ptr = ecb_i2a_u64 (ptr, u2);
-        ptr = ecb_i2a_04 (ptr, u1);
+        ptr = ECB_I2A_U64 (ptr, u2);
+        ptr = ECB_I2A_04 (ptr, u1);
     }
 #endif
 
     return ptr;
 }
 
-    ecb_inline char *
-ecb_i2a_i64 (char *ptr, int64_t v)
+    ECB_INLINE char *
+ECB_I2A_I64 (char *ptr, int64_t v)
 {
     *ptr = '-'; ptr += v < 0;
     uint64_t u = v < 0 ? -(uint64_t)v : v;
 
 #if ECB_64BIT_NATIVE
-    if (ecb_expect_true (u <= ECB_I2A_MAX_X10))
-        ptr = ecb_i2a_x10 (ptr, u);
-    else if (ecb_expect_false (u <= ECB_I2A_MAX_X10 * 1000000000))
+    if (ECB_EXPECT_TRUE (u <= ECB_I2A_MAX_X10))
+        ptr = ECB_I2A_X10 (ptr, u);
+    else if (ECB_EXPECT_FALSE (u <= ECB_I2A_MAX_X10 * 1000000000))
     {
         uint64_t u1 = u % 1000000000;
         uint64_t u2 = u / 1000000000;
 
-        ptr = ecb_i2a_x10 (ptr, u2);
-        ptr = ecb_i2a_09  (ptr, u1);
+        ptr = ECB_I2A_X10 (ptr, u2);
+        ptr = ECB_I2A_09  (ptr, u1);
     }
     else
     {
@@ -1245,11 +1254,11 @@ ecb_i2a_i64 (char *ptr, int64_t v)
 
         /* 2**31 is 19 digits, so the top is exactly one digit */
         *ptr++ = u3 + '0';
-        ptr = ecb_i2a_09 (ptr, u2);
-        ptr = ecb_i2a_09 (ptr, u1);
+        ptr = ECB_I2A_09 (ptr, u2);
+        ptr = ECB_I2A_09 (ptr, u1);
     }
 #else
-    ptr = ecb_i2a_u64 (ptr, u);
+    ptr = ECB_I2A_U64 (ptr, u);
 #endif
 
     return ptr;
@@ -1298,17 +1307,17 @@ ecb_i2a_i64 (char *ptr, int64_t v)
 #endif
 
 #if ECB_C99 || _XOPEN_VERSION >= 600 || _POSIX_VERSION >= 200112L
-#define ecb_ldexpf(x,e) ldexpf ((x), (e))
-#define ecb_frexpf(x,e) frexpf ((x), (e))
+#define ECB_LDEXPF(x,e) ldexpf ((x), (e))
+#define ECB_FREXPF(x,e) frexpf ((x), (e))
 #else
-#define ecb_ldexpf(x,e) (float) ldexp ((double) (x), (e))
-#define ecb_frexpf(x,e) (float) frexp ((double) (x), (e))
+#define ECB_LDEXPF(x,e) (float) ldexp ((double) (x), (e))
+#define ECB_FREXPF(x,e) (float) frexp ((double) (x), (e))
 #endif
 
 /* convert a float to ieee single/binary32 */
-ecb_function_ ecb_const uint32_t ecb_float_to_binary32 (float x);
-    ecb_function_ ecb_const uint32_t
-ecb_float_to_binary32 (float x)
+ECB_FUNCTION_ ECB_CONST uint32_t ECB_FLOAT_TO_BINARY32 (float x);
+    ECB_FUNCTION_ ECB_CONST uint32_t
+ECB_FLOAT_TO_BINARY32 (float x)
 {
     uint32_t r;
 
@@ -1324,7 +1333,7 @@ ecb_float_to_binary32 (float x)
     if (x < -3.40282346638528860e+38f) return 0xff800000U;
     if (x != x                       ) return 0x7fbfffffU;
 
-    m = ecb_frexpf (x, &e) * 0x1000000U;
+    m = ECB_FREXPF (x, &e) * 0x1000000U;
 
     r = m & 0x80000000U;
 
@@ -1346,9 +1355,9 @@ ecb_float_to_binary32 (float x)
 }
 
 /* converts an ieee single/binary32 to a float */
-ecb_function_ ecb_const float ecb_binary32_to_float (uint32_t x);
-    ecb_function_ ecb_const float
-ecb_binary32_to_float (uint32_t x)
+ECB_FUNCTION_ ECB_CONST float ecb_binary32_to_float (uint32_t x);
+    ECB_FUNCTION_ ECB_CONST float
+ECB_BINARY32_TO_FLOAT (uint32_t x)
 {
     float r;
 
@@ -1367,7 +1376,7 @@ ecb_binary32_to_float (uint32_t x)
         e = 1;
 
     /* we distrust ldexpf a bit and do the 2**-24 scaling by an extra multiply */
-    r = ecb_ldexpf (x * (0.5f / 0x800000U), e - 126);
+    r = ECB_LDEXPF (x * (0.5f / 0x800000U), e - 126);
 
     r = neg ? -r : r;
 #endif
@@ -1376,9 +1385,9 @@ ecb_binary32_to_float (uint32_t x)
 }
 
 /* convert a double to ieee double/binary64 */
-ecb_function_ ecb_const uint64_t ecb_double_to_binary64 (double x);
-    ecb_function_ ecb_const uint64_t
-ecb_double_to_binary64 (double x)
+ECB_FUNCTION_ ECB_CONST uint64_t ECB_DOUBLE_TO_BINARY64 (double x);
+    ECB_FUNCTION_ ECB_CONST uint64_t
+ECB_DOUBLE_TO_BINARY64 (double x)
 {
     uint64_t r;
 
@@ -1416,9 +1425,9 @@ ecb_double_to_binary64 (double x)
 }
 
 /* converts an ieee double/binary64 to a double */
-ecb_function_ ecb_const double ecb_binary64_to_double (uint64_t x);
-    ecb_function_ ecb_const double
-ecb_binary64_to_double (uint64_t x)
+ECB_FUNCTION_ ECB_CONST double ECB_BINARY64_TO_DOUBLE (uint64_t x);
+    ECB_FUNCTION_ ECB_CONST double
+ECB_BINARY64_TO_DOUBLE (uint64_t x)
 {
     double r;
 
@@ -1446,24 +1455,24 @@ ecb_binary64_to_double (uint64_t x)
 }
 
 /* convert a float to ieee half/binary16 */
-ecb_function_ ecb_const uint16_t ecb_float_to_binary16 (float x);
-    ecb_function_ ecb_const uint16_t
+ECB_FUNCTION_ ECB_CONST uint16_t ECB_FLOAT_TO_BINARY16 (float x);
+    ECB_FUNCTION_ ECB_CONST uint16_t
 ecb_float_to_binary16 (float x)
 {
-    return ecb_binary32_to_binary16 (ecb_float_to_binary32 (x));
+    return ecb_binary32_to_binary16 (ECB_FLOAT_TO_BINARY32 (x));
 }
 
 /* convert an ieee half/binary16 to float */
-ecb_function_ ecb_const float ecb_binary16_to_float (uint16_t x);
-    ecb_function_ ecb_const float
-ecb_binary16_to_float (uint16_t x)
+ECB_FUNCTION_ ECB_CONST float ECB_BINARY16_TO_FLOAT (uint16_t x);
+    ECB_FUNCTION_ ECB_CONST float
+ECB_BINARY16_TO_FLOAT (uint16_t x)
 {
-    return ecb_binary32_to_float (ecb_binary16_to_binary32 (x));
+    return ECB_BINARY32_TO_FLOAT (ECB_BINARY16_TO_BINARY32 (x));
 }
 
 #endif
 
-#include "ecb_internal.h"
+#include "_ecb.h"
 
 #endif
 
