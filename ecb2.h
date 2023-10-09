@@ -1,6 +1,12 @@
 #ifndef _ECB_H_
 #define _ECH_H_
 
+/**
+ * if you want to use ecb.h
+ * you maybe use： include "ecb2.h"
+ */
+#include "ecb.h"
+
 #define GCC_VERSION                                                            \
     ECB_DECLTYPE(i32)                                                          \
     (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
